@@ -1,4 +1,4 @@
-from app.utils.security import encrypt_base64, verifyHash_base64
+from security import encrypt_base64, verifyHash_base64
 
 _hash,salt = encrypt_base64("żółć")
 print(_hash,salt)
