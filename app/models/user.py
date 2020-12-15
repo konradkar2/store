@@ -1,5 +1,5 @@
 from __future__ import annotations
-from db import get_db
+from utils.db import get_db
 
 #todo:verify email 
 #change "name" to "username" in database
