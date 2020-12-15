@@ -4,12 +4,14 @@ from utils.db import get_db
 #todo:verify email 
 #change "name" to "username" in database
 class UserModel():
-    def __init__(self,name: str,email: str,password_hash: str,salt: str):
+    def __init__(self,username: str,email: str,password_hash: str,salt: str, _id: str = None):
         
-        self.name = name
+        self.username = username
         self.password_hash = password_hash
         self.salt = salt
         self.email = email
+        
+        self.id = _id
         
     def json(self):
         return {
@@ -29,8 +31,8 @@ class UserModel():
         userData = cursor.fetchone()
         user = None
         if(userData):
-            _id,name,_hash,salt,email = userData
-            user = UserModel(name,email,_hash,salt)       
+            _id,username,_hash,salt,email = userData
+            user = UserModel(username,email,_hash,salt,_id)       
             
         return user
     @classmethod
@@ -45,8 +47,8 @@ class UserModel():
         userData = cursor.fetchone()
         user = None
         if(userData):
-            _id,name,_hash,salt,email = userData
-            user = UserModel(name,email,_hash,salt)       
+            _id,username,_hash,salt,email = userData
+            user = UserModel(username,email,_hash,salt,_id)       
             
         return user
     
@@ -55,7 +57,7 @@ class UserModel():
         cursor = mydb.cursor()
         
         query = "INSERT INTO users (name, email, password_hash, salt) VALUES (%s, %s,%s,%s)"
-        params = (self.name,self.email,self.password_hash,self.salt)
+        params = (self.username,self.email,self.password_hash,self.salt)
         cursor.execute(query, params)
 
         mydb.commit()

@@ -1,10 +1,13 @@
-from flask import Flask,got_request_exception
+from flask import Flask,jsonify,got_request_exception
 from flask_restful import Resource, Api
+from flask_jwt_extended import JWTManager
 import logging
 
 
 from exceptions import errors
-from resources.user import UserRegister
+from resources.user import UserRegister, UserLogin
+from resources.jwt import set_jwt_settings
+
 
 root_logger= logging.getLogger()
 root_logger.setLevel(logging.DEBUG) 
@@ -21,16 +24,22 @@ def log_exception(sender, exception, **extra):
         pass
 
 app = Flask(__name__)
+app.config['JWT_SECRET_KEY'] = 'tajnykluczyk'
 got_request_exception.connect(log_exception, app)
 
 api = Api(app,errors=errors)
 
+jwt = JWTManager(app)
+
+set_jwt_settings(jwt)
+
 class HelloWorld(Resource):
     def get(self):
-        return {'hello': 'world'}
+        return jsonify({'hello': 'world'})
 
 api.add_resource(HelloWorld, '/')
 api.add_resource(UserRegister,'/register')
+api.add_resource(UserLogin,'/auth')
 
 if __name__ == '__main__':
     app.run(debug=True)
