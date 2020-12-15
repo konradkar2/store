@@ -26,10 +26,28 @@ class UserModel():
         params = (username,)
         cursor.execute(query, params)
 
-        user =  cursor.fetchone()
-        if(user):
-            userObj = UserModel(user['username',user['email'],user['password_hash'],user['salt']])
+        userData = cursor.fetchone()
+        user = None
+        if(userData):
+            _id,name,_hash,salt,email = userData
+            user = UserModel(name,email,_hash,salt)       
+            
+        return user
+    @classmethod
+    def find_by_email(cls,email: str) -> UserModel:
+        mydb = get_db()
+        cursor = mydb.cursor()
+        
+        query = "SELECT * FROM users WHERE email = %s"
+        params = (email,)
+        cursor.execute(query, params)
 
+        userData = cursor.fetchone()
+        user = None
+        if(userData):
+            _id,name,_hash,salt,email = userData
+            user = UserModel(name,email,_hash,salt)       
+            
         return user
     
     def save_to_db(self):

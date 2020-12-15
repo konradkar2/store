@@ -21,6 +21,8 @@ class UserRegister(Resource):
 
         if UserModel.find_by_username(data["username"]):
             return {"message": "User already exists"}, 400
+        if UserModel.find_by_email(data["email"]):
+            return {"message": "This email is already taken"}, 400
         try:
             password_hash, salt = encrypt_base64(data['password'])
             print(len(password_hash))

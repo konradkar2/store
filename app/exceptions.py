@@ -9,5 +9,5 @@ errors = {
         'message': "Internal server error",
         'status': 500,
     },
-    
+        
 }
