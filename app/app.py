@@ -6,6 +6,7 @@ import logging
 
 from exceptions import errors
 from resources.user import UserRegister, UserLogin
+from resources.game import AddGame
 from resources.jwt import set_jwt_settings
 
 
@@ -40,6 +41,8 @@ class HelloWorld(Resource):
 api.add_resource(HelloWorld, '/')
 api.add_resource(UserRegister,'/register')
 api.add_resource(UserLogin,'/auth')
+
+api.add_resource(AddGame,'/addgame')
 
 if __name__ == '__main__':
     app.run(debug=True)

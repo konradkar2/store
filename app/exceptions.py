@@ -4,10 +4,16 @@ class InternalServerError(HTTPException):
         super().__init__()
         self.err = err
 
+class BadRequestError(HTTPException):
+    pass
+
 errors = {
     'InternalServerError': {
         'message': "Internal server error",
         'status': 500,
     },
-        
+    'BadRequestError': {
+        'message' : 'Bad request erorr',
+        'status' : 400
+    }
 }
