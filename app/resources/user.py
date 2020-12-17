@@ -5,6 +5,7 @@ import mysql.connector
 from exceptions import InternalServerError
 from flask_jwt_extended import create_access_token
 
+
 class UserRegister(Resource):
     parser = reqparse.RequestParser()
     parser.add_argument(
@@ -26,8 +27,8 @@ class UserRegister(Resource):
             return {"message": "This email is already taken"}, 400
         try:
             password_hash, salt = encrypt_base64(data['password'])            
-
-            user = UserModel(data['username'],data['email'],password_hash,salt)
+            role = 'user'
+            user = UserModel(data['username'],data['email'],role,password_hash,salt)
             user.save_to_db()
         except mysql.connector.Error as e:
             raise InternalServerError(e)
@@ -56,10 +57,12 @@ class UserLogin(Resource):
             result = verifyHash_base64(data['password'],user.password_hash,user.salt)                       
 
             if result:
-                access_token = create_access_token(identity=user.id,fresh=True)
+                claims = {'role' : user.role}
+                access_token = create_access_token(identity=user.id,user_claims=claims,fresh=True)
                 #refresh_token = create_refresh_token(user.id)
                 return {
                     'access_token': access_token,
+                    'role' : user.role,
                     'user': user.json()
                 },200
             return {'message' : "Invalid credentials"}, 401   

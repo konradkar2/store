@@ -6,7 +6,8 @@ class InternalServerError(HTTPException):
 
 class BadRequestError(HTTPException):
     pass
-
+class UnauthorizedError(HTTPException):
+    pass
 errors = {
     'InternalServerError': {
         'message': "Internal server error",
@@ -15,5 +16,9 @@ errors = {
     'BadRequestError': {
         'message' : 'Bad request erorr',
         'status' : 400
+    },
+    'UnauthorizedError': {
+        'message' : "Unauthorized error",
+        'status' : 401
     }
 }

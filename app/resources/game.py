@@ -1,10 +1,12 @@
 from flask_restful import Resource, reqparse
 from models.game import GameModel
+from resources.authorize import require_admin
 import mysql.connector
 from exceptions import InternalServerError, BadRequestError
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import jwt_required
 
 from datetime import datetime
+
 
 class AddGame(Resource):
     parser = reqparse.RequestParser()
@@ -37,6 +39,8 @@ class AddGame(Resource):
     )
 
     @classmethod
+    @jwt_required    
+    @require_admin
     def post(cls):
         data = cls.parser.parse_args()
   
@@ -54,3 +58,22 @@ class AddGame(Resource):
             raise InternalServerError(e)
 
         return {'message': 'Game added successfully.'}, 201
+
+
+class SearchGame(Resource):
+    parser = reqparse.RequestParser()
+    parser.add_argument(
+        "title", type=str, required=True, location='args',help="This field cannot be left blank!"
+    )
+    @classmethod
+    def get(cls):
+        data = cls.parser.parse_args()        
+        try:
+            games = GameModel.find_many_by_name(data['title'])            
+
+            return {
+                'result_count' : len(games),
+                'games' : [game.json() for game in games]}
+        except Exception as e:
+            raise InternalServerError(e)
+

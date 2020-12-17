@@ -2,6 +2,7 @@ from __future__ import annotations
 from utils.db import get_db
 from datetime import datetime
 from typing import List
+
 #todo:verify email 
 #change "name" to "username" in database
 class GameModel():
@@ -52,14 +53,14 @@ class GameModel():
         mydb = get_db()
         cursor = mydb.cursor()
         
-        query = "SELECT * FROM games WHERE name LIKE %s%"
-        params = (name,)
+        query = "SELECT * FROM games WHERE name LIKE %s"
+        params = (name + "%",)
         cursor.execute(query, params)
 
         gameData = cursor.fetchall()
         games = []
         for row in gameData:          
-            _id,name,price,quantity,description,release_date,is_digital,category_id,platform_id,age_category = gameData
+            _id,name,price,quantity,description,release_date,is_digital,category_id,platform_id,age_category = row
             game = GameModel(name,price,quantity,description,release_date,is_digital,category_id,platform_id,age_category,_id)  
             games.append(game)
 

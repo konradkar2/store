@@ -4,20 +4,21 @@ from utils.db import get_db
 #todo:verify email 
 #change "name" to "username" in database
 class UserModel():
-    def __init__(self,username: str,email: str,password_hash: str,salt: str, _id: str = None):
+    def __init__(self,username: str,email: str, role: str,password_hash: str,salt: str, _id: str = None):
         
         self.username = username
         self.password_hash = password_hash
         self.salt = salt
         self.email = email
-        
+        self.role = role
+
         self.id = _id
         
     def json(self):
         return {
             "username": self.username,
             "id": self.id,
-            "email" : self.email
+            "email" : self.email,            
         }
     @classmethod
     def find_by_username(cls,username: str) -> UserModel:
@@ -31,8 +32,8 @@ class UserModel():
         userData = cursor.fetchone()
         user = None
         if(userData):
-            _id,username,_hash,salt,email = userData
-            user = UserModel(username,email,_hash,salt,_id)       
+            _id,username,email,role,_hash,salt = userData
+            user = UserModel(username,email,role,_hash,salt,_id)       
             
         return user
     @classmethod
@@ -47,8 +48,8 @@ class UserModel():
         userData = cursor.fetchone()
         user = None
         if(userData):
-            _id,username,_hash,salt,email = userData
-            user = UserModel(username,email,_hash,salt,_id)       
+            _id,username,email,role,_hash,salt = userData
+            user = UserModel(username,email,role,_hash,salt,_id)       
             
         return user
     
@@ -56,8 +57,8 @@ class UserModel():
         mydb = get_db()
         cursor = mydb.cursor()
         
-        query = "INSERT INTO users (name, email, password_hash, salt) VALUES (%s, %s,%s,%s)"
-        params = (self.username,self.email,self.password_hash,self.salt)
+        query = "INSERT INTO users (name, email,role, password_hash, salt) VALUES (%s, %s,%s,%s,%s)"
+        params = (self.username,self.email,self.role,self.password_hash,self.salt)
         cursor.execute(query, params)
 
         mydb.commit()
