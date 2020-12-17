@@ -46,11 +46,11 @@ class AddGame(Resource):
 
             game = GameModel(**data)
             game.save_to_db()
-        except mysql.connector.Error as err:
-            raise InternalServerError(err)
-        except ValueError as err:
+        except mysql.connector.Error as e:
+            raise InternalServerError(e)
+        except ValueError as e:
             raise BadRequestError()
-        except Exception as err:
-            raise InternalServerError(err)
+        except Exception as e:
+            raise InternalServerError(e)
 
         return {'message': 'Game added successfully.'}, 201

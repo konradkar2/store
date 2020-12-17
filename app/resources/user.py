@@ -29,10 +29,10 @@ class UserRegister(Resource):
 
             user = UserModel(data['username'],data['email'],password_hash,salt)
             user.save_to_db()
-        except mysql.connector.Error as err:
-            raise InternalServerError(err)
-        except Exception as err:
-            raise InternalServerError(err)
+        except mysql.connector.Error as e:
+            raise InternalServerError(e)
+        except Exception as e:
+            raise InternalServerError(e)
 
         return {'message': 'User created successfully.'}, 201
 
@@ -48,17 +48,22 @@ class UserLogin(Resource):
     @classmethod
     def post(cls):
         data = cls.parser.parse_args()
-        user = UserModel.find_by_username(data['username'])
-        if user is None:
-            return {'message' : "Invalid credentials"}, 401   
-        
-        result = verifyHash_base64(data['password'],user.password_hash,user.salt)
+        try:
+            user = UserModel.find_by_username(data['username'])
+            if user is None:
+                return {'message' : "Invalid credentials"}, 401   
+            
+            result = verifyHash_base64(data['password'],user.password_hash,user.salt)                       
 
-        if result:
-            access_token = create_access_token(identity=user.id,fresh=True)
-            #refresh_token = create_refresh_token(user.id)
-            return {
-                'access_token': access_token,
-                'user': user.json()
-            },200
-        return {'message' : "Invalid credentials"}, 401   
+            if result:
+                access_token = create_access_token(identity=user.id,fresh=True)
+                #refresh_token = create_refresh_token(user.id)
+                return {
+                    'access_token': access_token,
+                    'user': user.json()
+                },200
+            return {'message' : "Invalid credentials"}, 401   
+        except mysql.connector.Error as e:
+            raise InternalServerError(e)
+        except Exception as e:
+            raise InternalServerError(e)

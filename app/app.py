@@ -2,6 +2,7 @@ from flask import Flask,jsonify,got_request_exception
 from flask_restful import Resource, Api
 from flask_jwt_extended import JWTManager
 import logging
+import traceback
 
 
 from exceptions import errors
@@ -19,10 +20,16 @@ root_logger.addHandler(handler)
 def log_exception(sender, exception, **extra):
     """ Log an exception to our logging framework """    
     root_logger.error(exception)
+    
     try:
         root_logger.error(exception.err)
     except AttributeError:
         pass
+    finally:
+        tracelog = traceback.format_exc()
+        root_logger.error(tracelog)
+
+
 
 app = Flask(__name__)
 app.config['JWT_SECRET_KEY'] = 'tajnykluczyk'
