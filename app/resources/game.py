@@ -42,8 +42,7 @@ class AddGame(Resource):
     @jwt_required    
     @require_admin
     def post(cls):
-        data = cls.parser.parse_args()
-  
+        data = cls.parser.parse_args()  
         try:
             now = datetime.utcnow()
             data['release_date'] = now.strftime('%Y-%m-%d %H:%M:%S')
