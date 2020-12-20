@@ -1,4 +1,5 @@
-import mysql.connector 
+from contextlib import contextmanager
+import mysql.connector
 
 db_settings = {
     'host' : 'localhost',
@@ -15,3 +16,20 @@ def get_db():
     )
     return mydb
 
+@contextmanager
+def dbTransactionCursor():
+    db = get_db()
+    db.autocommit = False
+
+    cursor = db.cursor()
+    try:
+        yield cursor
+    except Exception:        
+        db.rollback()
+        raise 
+    else:
+        db.commit()
+    finally:
+        if db.is_connected():
+            cursor.close()
+            db.close()

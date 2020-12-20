@@ -1,5 +1,5 @@
 from __future__ import annotations
-from utils.db import get_db
+from utils.db import get_db,dbTransactionCursor
 
 #todo:verify email 
 #change "name" to "username" in database
@@ -54,13 +54,11 @@ class UserModel():
         return user
     
     def save_to_db(self):
-        mydb = get_db()
-        cursor = mydb.cursor()
-        
-        query = "INSERT INTO users (name, email,role, password_hash, salt) VALUES (%s, %s,%s,%s,%s)"
-        params = (self.username,self.email,self.role,self.password_hash,self.salt)
-        cursor.execute(query, params)
+        with dbTransactionCursor() as cursor:        
+            query = "INSERT INTO users (name, email,role, password_hash, salt) VALUES (%s, %s,%s,%s,%s)"
+            params = (self.username,self.email,self.role,self.password_hash,self.salt)
+            cursor.execute(query, params)
 
-        mydb.commit()
+        
 
 
