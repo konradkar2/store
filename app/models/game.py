@@ -1,5 +1,5 @@
 from __future__ import annotations
-from app.utils.db import get_db
+from utils.db import get_db
 from datetime import datetime
 from typing import List
 

@@ -3,9 +3,9 @@ import mysql.connector
 from flask_jwt_extended import jwt_required
 from datetime import datetime
 
-from app.models.game import GameModel
-from app.resources.authorize import require_admin
-from app.exceptions import InternalServerError, BadRequestError
+from models.game import GameModel
+from resources.authorize import require_admin
+from exceptions import InternalServerError, BadRequestError
 
 class AddGame(Resource):
     parser = reqparse.RequestParser()

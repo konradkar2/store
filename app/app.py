@@ -5,10 +5,10 @@ import logging
 import traceback
 
 
-from app.exceptions import errors
-from app.resources.user import UserRegister, UserLogin
-from app.resources.game import AddGame,SearchGame
-from app.resources.jwt import set_jwt_settings
+from exceptions import errors
+from resources.user import UserRegister, UserLogin
+from resources.game import AddGame,SearchGame
+from resources.jwt import set_jwt_settings
 
 
 root_logger= logging.getLogger()
