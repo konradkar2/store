@@ -5,10 +5,10 @@ import logging
 import traceback
 
 
-from exceptions import errors
-from resources.user import UserRegister, UserLogin
-from resources.game import AddGame,SearchGame
-from resources.jwt import set_jwt_settings
+from app.exceptions import errors
+from app.resources.user import UserRegister, UserLogin
+from app.resources.game import AddGame,SearchGame
+from app.resources.jwt import set_jwt_settings
 
 
 root_logger= logging.getLogger()
@@ -20,7 +20,6 @@ root_logger.addHandler(handler)
 def log_exception(sender, exception, **extra):
     """ Log an exception to our logging framework """    
     root_logger.error(exception)
-    
     try:
         root_logger.error(exception.err)
     except AttributeError:
@@ -28,6 +27,9 @@ def log_exception(sender, exception, **extra):
     finally:
         tracelog = traceback.format_exc()
         root_logger.error(tracelog)
+        
+        
+        
 
 
 
