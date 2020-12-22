@@ -2,9 +2,8 @@ from flask import Flask
 import unittest
 from flask_testing import TestCase
 
-import sys
-sys.path.append('..')
-from app import app
+
+from application import app
 from tests.utils import print_test_time_elapsed, get_random_string
 
 
