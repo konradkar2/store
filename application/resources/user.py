@@ -2,9 +2,9 @@ from flask_restful import Resource, reqparse
 import mysql.connector
 from flask_jwt_extended import create_access_token
 
-from exceptions import InternalServerError
-from models.user import UserModel
-from utils.security import encrypt_base64, verifyHash_base64
+from store.application.exceptions import InternalServerError
+from store.application.models.user import UserModel
+from store.application.utils.security import encrypt_base64, verifyHash_base64
 
 
 class UserRegister(Resource):

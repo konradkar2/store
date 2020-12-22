@@ -1,7 +1,8 @@
 from __future__ import annotations
-from utils.db import get_db
 from datetime import datetime
 from typing import List
+
+from store.application.utils.db import get_db
 
 #todo:verify email 
 #change "name" to "username" in database

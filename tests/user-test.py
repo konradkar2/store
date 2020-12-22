@@ -3,8 +3,8 @@ import unittest
 from flask_testing import TestCase
 
 
-from application import app
-from tests.utils import print_test_time_elapsed, get_random_string
+from store.application import app
+from store.tests.utils import print_test_time_elapsed, get_random_string
 
 
 
