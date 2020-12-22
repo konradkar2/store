@@ -1,9 +1,10 @@
 from flask_restful import Resource, reqparse
 import mysql.connector
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required,get_jwt_identity
 from datetime import datetime
 
 from store.application.models.game import GameModel
+from store.application.models.category import CategoryModel
 from store.application.resources.authorize import require_admin
 from store.application.exceptions import InternalServerError, BadRequestError
 
@@ -26,28 +27,34 @@ class AddGame(Resource):
     )
     parser.add_argument(
         "is_digital", type=bool,  required=True, help="This field cannot be left blank!"
-    )
-    parser.add_argument(
-        "category_id", type=int, required=True, help="This field cannot be left blank!"
-    )
+    )    
     parser.add_argument(
         "platform_id", type=int, required=True, help="This field cannot be left blank!"
     )
     parser.add_argument(
         "age_category", type=str,  required=True, help="This field cannot be left blank!"
     )
+    parser.add_argument(
+        "categories", action='append',  required=True, help="This field cannot be left blank!"
+    )
+    
 
     @classmethod
     @jwt_required    
-    @require_admin
+    #@require_admin
     def post(cls):
         data = cls.parser.parse_args()  
         try:
             now = datetime.utcnow()
             data['release_date'] = now.strftime('%Y-%m-%d %H:%M:%S')
-
+            categories = data.pop('categories')
             game = GameModel(**data)
             game.save_to_db()
+
+            if game.id:
+                for name in categories:
+                    category = CategoryModel(name,game.id)
+                    category.save_to_db()
         except mysql.connector.Error as e:
             raise InternalServerError(e)
         except ValueError as e:
@@ -67,8 +74,7 @@ class SearchGame(Resource):
     def get(cls):
         data = cls.parser.parse_args()        
         try:
-            games = GameModel.find_many_by_name(data['title'])            
-
+            games = GameModel.find_many_by_name(data['title'])         
             return {
                 'result_count' : len(games),
                 'games' : [game.json() for game in games]}

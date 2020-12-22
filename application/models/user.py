@@ -59,7 +59,7 @@ class UserModel():
             params = (self.username,self.email,self.role,self.password_hash,self.salt)
             cursor.execute(query, params)
             
-        print(self.id)
+       
 
         
 

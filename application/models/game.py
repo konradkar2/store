@@ -2,36 +2,35 @@ from __future__ import annotations
 from datetime import datetime
 from typing import List
 
-from store.application.utils.db import get_db
-
+from store.application.utils.db import get_db,dbTransactionCursor
+from store.application.models.category import CategoryModel
 #todo:verify email 
 #change "name" to "username" in database
 class GameModel():
     def __init__(self,name: str,price: float,
              quantity: int, description: str, 
              release_date: str, is_digital: bool,
-             category_id: int,platform_id: int,age_category: str , _id: int = None):
+             platform_id: int,age_category: str , _id: int = None):
         
         self.name = name
         self.price = price
         self.quantity = quantity
         self.description = description
         self.release_date = release_date
-        self.is_digital = is_digital
-        self.category_id = category_id
+        self.is_digital = is_digital       
         self.platform_id = platform_id
         self.age_category = age_category
         
         self.id = _id
         
-    def json(self):
+    def json(self):       
         return {
             "name": self.name,
-            "price": self.price,
+            "price": float(self.price),
             "quantity": self.quantity,
             "is_digital" : self.is_digital,
-            "age_category": self.age_category
-
+            "age_category": self.age_category,
+            "categories" : [category.name for category in CategoryModel.find_many_by_game_id(self.id)]  
         }
     @classmethod
     def find_by_id(cls,_id: int) -> GameModel:
@@ -45,8 +44,8 @@ class GameModel():
         gameData = cursor.fetchone()
         game = None
         if(gameData):
-            _id,name,price,quantity,description,release_date,is_digital,category_id,platform_id,age_category = gameData
-            game = GameModel(name,price,quantity,description,release_date,is_digital,category_id,platform_id,age_category,_id)       
+            _id,name,price,quantity,description,release_date,is_digital,platform_id,age_category = gameData
+            game = GameModel(name,price,quantity,description,release_date,is_digital,platform_id,age_category,_id)       
             
         return game
     @classmethod
@@ -61,20 +60,15 @@ class GameModel():
         gameData = cursor.fetchall()
         games = []
         for row in gameData:          
-            _id,name,price,quantity,description,release_date,is_digital,category_id,platform_id,age_category = row
-            game = GameModel(name,price,quantity,description,release_date,is_digital,category_id,platform_id,age_category,_id)  
+            _id,name,price,quantity,description,release_date,is_digital,platform_id,age_category = row
+            game = GameModel(name,price,quantity,description,release_date,is_digital,platform_id,age_category,_id)  
             games.append(game)
 
         return games
-
+         
     def save_to_db(self):
-        mydb = get_db()
-        cursor = mydb.cursor()
-        
-        query = "INSERT INTO games (name,price,quantity,description,release_date,is_digital,category_id,platform_id,age_category) VALUES (%s, %s,%s,%s,%s, %s,%s,%s,%s)"
-        params = (self.name,self.price,self.quantity,self.description,self.release_date,self.is_digital,self.category_id,self.platform_id,self.age_category)
-        cursor.execute(query, params)
-
-        mydb.commit()
-
+        with dbTransactionCursor(self) as cursor:        
+            query = "INSERT INTO games (name,price,quantity,description,release_date,is_digital,platform_id,age_category) VALUES (%s, %s,%s,%s,%s, %s,%s,%s)"
+            params = (self.name,self.price,self.quantity,self.description,self.release_date,self.is_digital,self.platform_id,self.age_category)
+            cursor.execute(query, params)
 
