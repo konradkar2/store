@@ -1,7 +1,7 @@
 import sys
 sys.path.append('..')
 import unittest
-from app.utils.security import encrypt_base64, verifyHash_base64
+from application.utils.security import encrypt_base64, verifyHash_base64
 from tests.testingUtils import print_test_time_elapsed, get_random_string
 
 class TestStringHashing(unittest.TestCase):

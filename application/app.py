@@ -5,15 +5,15 @@ import logging
 import traceback
 
 
-from exceptions import errors
-from resources.user import UserRegister, UserLogin
-from resources.game import AddGame,SearchGame
-from resources.jwt import set_jwt_settings
+from application.exceptions import errors
+from application.resources.user import UserRegister, UserLogin
+from application.resources.game import AddGame,SearchGame
+from application.resources.jwt import set_jwt_settings
 
 
 root_logger= logging.getLogger()
 root_logger.setLevel(logging.DEBUG) 
-handler = logging.FileHandler('app-errors.log', 'a', 'utf-8') 
+handler = logging.FileHandler('application-errors.log', 'a', 'utf-8')
 handler.setFormatter(logging.Formatter('%(asctime)s %(message)s')) 
 root_logger.addHandler(handler)
 

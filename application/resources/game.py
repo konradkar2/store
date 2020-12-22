@@ -1,8 +1,8 @@
 from flask_restful import Resource, reqparse
-from models.game import GameModel
-from resources.authorize import require_admin
+from application.models.game import GameModel
+from application.resources.authorize import require_admin
 import mysql.connector
-from exceptions import InternalServerError, BadRequestError
+from application.exceptions import InternalServerError, BadRequestError
 from flask_jwt_extended import jwt_required
 
 from datetime import datetime

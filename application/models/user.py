@@ -1,5 +1,5 @@
 from __future__ import annotations
-from utils.db import get_db,dbTransactionCursor
+from application.utils.db import get_db,dbTransactionCursor
 
 #todo:verify email 
 #change "name" to "username" in database
