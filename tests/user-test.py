@@ -13,7 +13,6 @@ class UserTest(TestCase):
         print(app)
         self.client = app.app.test_client()
         
-
         
     def tearDown(self):
         pass

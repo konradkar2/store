@@ -17,7 +17,7 @@ def get_db():
     return mydb
 
 @contextmanager
-def dbTransactionCursor():
+def dbTransactionCursor(obj = None):
     db = get_db()
     db.autocommit = False
 
@@ -28,8 +28,10 @@ def dbTransactionCursor():
         db.rollback()
         raise 
     else:
-        db.commit()
-    finally:
+        db.commit()  
+        if obj:
+            obj.id = cursor.lastrowid
+    finally:        
         if db.is_connected():
             cursor.close()
             db.close()
