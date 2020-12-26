@@ -33,7 +33,7 @@ class CategoryModel:
             
         return category
     @classmethod
-    def find_many_by_game_id(cls,game_id: int) -> CategoryModel:
+    def find_many_by_game_id(cls,game_id: int) -> List[CategoryModel]:
         mydb = get_db()
         cursor = mydb.cursor()
         

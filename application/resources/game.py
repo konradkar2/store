@@ -45,12 +45,13 @@ class AddGame(Resource):
     def post(cls):
         data = cls.parser.parse_args()  
         try:
+            #create and and save GameModel
             now = datetime.utcnow()
             data['release_date'] = now.strftime('%Y-%m-%d %H:%M:%S')
             categories = data.pop('categories')
             game = GameModel(**data)
             game.save_to_db()
-
+            #create categories for the game.id
             if game.id:
                 for name in categories:
                     category = CategoryModel(name,game.id)
@@ -80,4 +81,10 @@ class SearchGame(Resource):
                 'games' : [game.json() for game in games]}
         except Exception as e:
             raise InternalServerError(e)
+
+class AddKey(Resource):
+    parser = reqparse.RequestParser()
+    parser.add_argument(
+        "age_category", type=str,  required=True, help="This field cannot be left blank!"
+    )
 
