@@ -1,5 +1,6 @@
 from flask_jwt_extended import get_jwt_claims
 from store.application.exceptions import UnauthorizedError
+
 admin = "admin"
 
 def require_admin(func):

@@ -5,6 +5,7 @@ from datetime import datetime
 
 from store.application.models.game import GameModel
 from store.application.models.category import CategoryModel
+from store.application.models.key import KeyModel
 from store.application.resources.authorize import require_admin
 from store.application.exceptions import InternalServerError, BadRequestError
 
@@ -85,6 +86,33 @@ class SearchGame(Resource):
 class AddKey(Resource):
     parser = reqparse.RequestParser()
     parser.add_argument(
-        "age_category", type=str,  required=True, help="This field cannot be left blank!"
+        "game_id", type=int,  required=True, help="This field cannot be left blank!"        
     )
+    parser.add_argument(
+        "key", type=str,  required=True, help="This field cannot be left blank!"     
+    )
+    
+    @jwt_required
+    #@require_admin
+    def post(cls):
+        data = cls.parser.parse_args()  
+        key = data['key']    
+        game_id = data['game_id']
+        try:
+            game = GameModel.find_by_id(game_id)
+            if game is None:
+                return {'message' : "Error when appending key, game id not found"}, 404
+            if game.is_digital == False:
+                return {'message' : "Error when appending key, game of id {game_id} is not digital".format(game_id=game_id)}, 404
+            key = KeyModel.find_by_key(game_id,key)
+            if key:
+                return {'message' : "Error when appending key, already in database", "key" : key.json()}, 401   
+
+            key = KeyModel(game_id,key)
+            key.save_to_db()
+
+            return {'message': 'Key added sucessfully.'}, 201
+
+        except Exception as e:
+            raise InternalServerError(e)
 

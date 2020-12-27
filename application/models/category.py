@@ -2,7 +2,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import List
 
-from store.application.utils.db import get_db,dbTransactionCursor
+from store.application.utils.db import dbReadCursor,dbTransactionCursor
 
 
 class CategoryModel:
@@ -18,14 +18,12 @@ class CategoryModel:
         }
     @classmethod
     def find_by_id(cls,_id: int) -> CategoryModel:
-        mydb = get_db()
-        cursor = mydb.cursor()
-        
-        query = "SELECT * FROM categories WHERE id = %s"
-        params = (_id,)
-        cursor.execute(query, params)
+        with dbReadCursor() as cursor:              
+            query = "SELECT * FROM categories WHERE id = %s"
+            params = (_id,)
+            cursor.execute(query, params)
+            categoryData = cursor.fetchone()
 
-        categoryData = cursor.fetchone()
         category = None
         if(categoryData):
             _id,name,game_id = categoryData
@@ -34,14 +32,11 @@ class CategoryModel:
         return category
     @classmethod
     def find_many_by_game_id(cls,game_id: int) -> List[CategoryModel]:
-        mydb = get_db()
-        cursor = mydb.cursor()
-        
-        query = "SELECT * FROM categories WHERE game_id = %s"
-        params = (game_id,)
-        cursor.execute(query, params)
-
-        categoryData = cursor.fetchall()
+        with dbReadCursor() as cursor:    
+            query = "SELECT * FROM categories WHERE game_id = %s"
+            params = (game_id,)
+            cursor.execute(query, params)
+            categoryData = cursor.fetchall()
         
         categories = []
         for row in categoryData:

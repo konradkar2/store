@@ -2,7 +2,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import List
 
-from store.application.utils.db import get_db,dbTransactionCursor
+from store.application.utils.db import dbReadCursor,dbTransactionCursor
 from store.application.models.category import CategoryModel
 #todo:verify email 
 #change "name" to "username" in database
@@ -25,6 +25,7 @@ class GameModel():
         
     def json(self):       
         return {
+            "id": self.id,
             "name": self.name,
             "price": float(self.price),
             "quantity": self.quantity,
@@ -34,14 +35,12 @@ class GameModel():
         }
     @classmethod
     def find_by_id(cls,_id: int) -> GameModel:
-        mydb = get_db()
-        cursor = mydb.cursor()
-        
-        query = "SELECT * FROM games WHERE id = %s"
-        params = (_id,)
-        cursor.execute(query, params)
+        with dbReadCursor() as cursor:
+            query = "SELECT * FROM games WHERE id = %s"
+            params = (_id,)
+            cursor.execute(query, params)
+            gameData = cursor.fetchone()
 
-        gameData = cursor.fetchone()
         game = None
         if(gameData):
             _id,name,price,quantity,description,release_date,is_digital,platform_id,age_category = gameData
@@ -50,14 +49,12 @@ class GameModel():
         return game
     @classmethod
     def find_many_by_name(cls,name: str) -> List[GameModel]:
-        mydb = get_db()
-        cursor = mydb.cursor()
-        
-        query = "SELECT * FROM games WHERE name LIKE %s"
-        params = (name + "%",)
-        cursor.execute(query, params)
-
-        gameData = cursor.fetchall()
+        with dbReadCursor() as cursor:
+            query = "SELECT * FROM games WHERE name LIKE %s"
+            params = (name + "%",)
+            cursor.execute(query, params)
+            gameData = cursor.fetchall()
+            
         games = []
         for row in gameData:          
             _id,name,price,quantity,description,release_date,is_digital,platform_id,age_category = row

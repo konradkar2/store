@@ -1,5 +1,5 @@
 from __future__ import annotations
-from store.application.utils.db import get_db,dbTransactionCursor
+from store.application.utils.db import dbReadCursor,dbTransactionCursor
 
 #todo:verify email 
 #change "name" to "username" in database
@@ -22,14 +22,12 @@ class UserModel():
         }
     @classmethod
     def find_by_username(cls,username: str) -> UserModel:
-        mydb = get_db()
-        cursor = mydb.cursor()
+        with dbReadCursor() as cursor:        
+            query = "SELECT * FROM users WHERE name = %s"
+            params = (username,)
+            cursor.execute(query, params)
+            userData = cursor.fetchone()
         
-        query = "SELECT * FROM users WHERE name = %s"
-        params = (username,)
-        cursor.execute(query, params)
-
-        userData = cursor.fetchone()
         user = None
         if(userData):
             _id,username,email,role,_hash,salt = userData
@@ -38,14 +36,12 @@ class UserModel():
         return user
     @classmethod
     def find_by_email(cls,email: str) -> UserModel:
-        mydb = get_db()
-        cursor = mydb.cursor()
+        with dbReadCursor() as cursor:
+            query = "SELECT * FROM users WHERE email = %s"
+            params = (email,)
+            cursor.execute(query, params)
+            userData = cursor.fetchone()
         
-        query = "SELECT * FROM users WHERE email = %s"
-        params = (email,)
-        cursor.execute(query, params)
-
-        userData = cursor.fetchone()
         user = None
         if(userData):
             _id,username,email,role,_hash,salt = userData
