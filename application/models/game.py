@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import List
 
 from store.application.utils.db import dbReadCursor,dbTransactionCursor
-from store.application.models.category import CategoryModel
+from store.application.models.game_category import GameCategoryModel
 #todo:verify email 
 #change "name" to "username" in database
 class GameModel():
@@ -31,7 +31,7 @@ class GameModel():
             "quantity": self.quantity,
             "is_digital" : self.is_digital,
             "age_category": self.age_category,
-            "categories" : [category.name for category in CategoryModel.find_many_by_game_id(self.id)]  
+            "categories" : [category.jsonMin() for category in GameCategoryModel.find_many_by_game_id(self.id)]  
         }
     @classmethod
     def find_by_id(cls,_id: int) -> GameModel:

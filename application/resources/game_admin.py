@@ -4,11 +4,12 @@ from flask_jwt_extended import jwt_required,get_jwt_identity
 from datetime import datetime
 
 from store.application.models.game import GameModel
+from store.application.models.game_category import GameCategoryModel
 from store.application.models.category import CategoryModel
 from store.application.models.key import KeyModel
 from store.application.resources.authorize import require_admin
 from store.application.exceptions import InternalServerError, BadRequestError
-
+from store.application.models.category import CategoryModel
 class AddGame(Resource):
     parser = reqparse.RequestParser()
     parser.add_argument(
@@ -42,7 +43,7 @@ class AddGame(Resource):
 
     @classmethod
     @jwt_required    
-    #@require_admin
+    @require_admin
     def post(cls):
         data = cls.parser.parse_args()  
         try:
@@ -54,9 +55,12 @@ class AddGame(Resource):
             game.save_to_db()
             #create categories for the game.id
             if game.id:
-                for name in categories:
-                    category = CategoryModel(name,game.id)
-                    category.save_to_db()
+                for category_id in categories:
+                    category = CategoryModel.find_by_id(category_id)
+                    if category is None:
+                        return {'message': 'Category with id {category_id} not found'.format(category_id=category_id)}, 400
+                    game_category = GameCategoryModel(game.id,category_id)
+                    game_category.save_to_db()
         except mysql.connector.Error as e:
             raise InternalServerError(e)
         except ValueError as e:
@@ -66,22 +70,6 @@ class AddGame(Resource):
 
         return {'message': 'Game added successfully.'}, 201
 
-
-class SearchGame(Resource):
-    parser = reqparse.RequestParser()
-    parser.add_argument(
-        "title", type=str, required=True, location='args',help="This field cannot be left blank!"
-    )
-    @classmethod
-    def get(cls):
-        data = cls.parser.parse_args()        
-        try:
-            games = GameModel.find_many_by_name(data['title'])         
-            return {
-                'result_count' : len(games),
-                'games' : [game.json() for game in games]}
-        except Exception as e:
-            raise InternalServerError(e)
 
 class AddKey(Resource):
     parser = reqparse.RequestParser()
@@ -93,22 +81,23 @@ class AddKey(Resource):
     )
     
     @jwt_required
-    #@require_admin
+    @require_admin
     def post(cls):
         data = cls.parser.parse_args()  
-        key = data['key']    
+        key_str = data['key']    
         game_id = data['game_id']
+        
         try:
             game = GameModel.find_by_id(game_id)
             if game is None:
-                return {'message' : "Error when appending key, game id not found"}, 404
+                return {'message' : "Error when appending a key, game id not found"}, 404
             if game.is_digital == False:
-                return {'message' : "Error when appending key, game of id {game_id} is not digital".format(game_id=game_id)}, 404
-            key = KeyModel.find_by_key(game_id,key)
+                return {'message' : "Error when appending a key, game of id {game_id} is not digital".format(game_id=game_id)}, 404
+            key = KeyModel.find_by_key(game_id,key_str)
             if key:
-                return {'message' : "Error when appending key, already in database", "key" : key.json()}, 401   
+                return {'message' : "Error when appending a key, already in database", "key" : key.json()}, 401   
 
-            key = KeyModel(game_id,key)
+            key = KeyModel(game_id,key_str)                  
             key.save_to_db()
 
             return {'message': 'Key added sucessfully.'}, 201

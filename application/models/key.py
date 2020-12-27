@@ -7,8 +7,8 @@ from typing import List
 class KeyModel():
     def __init__(self,game_id: int, key: str,used: bool = False, _id: int = None):
         self.id = _id
-        self.game_id = game_id,
-        self.used = used,
+        self.game_id = game_id
+        self.used = used
         self.key = key
 
     def json(self):
@@ -22,7 +22,7 @@ class KeyModel():
     @classmethod
     def find_by_key(cls,game_id: int, key: str):
         with dbReadCursor() as cursor:  
-            query = "SELECT * FROM keys WHERE game_id = %s AND key = %s"
+            query = "SELECT * FROM mydb.keys WHERE keys.game_id = %s AND keys.key = %s"
             params = (game_id,key)
             cursor.execute(query, params)
             keyData = cursor.fetchone()
@@ -39,7 +39,7 @@ class KeyModel():
     
     def save_to_db(self):
         with dbTransactionCursor(self) as cursor:        
-            query = "INSERT INTO keys (game_id,used,key) VALUES (%s, %s,%s)"
+            query = "INSERT INTO mydb.keys (keys.game_id, keys.used, keys.key) VALUES (%s, %s,%s)"
             params = (self.game_id,self.used,self.key)
             cursor.execute(query, params)
 

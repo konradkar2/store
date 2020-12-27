@@ -47,7 +47,7 @@ def dbTransactionCursor(obj = None):
 
 @contextmanager
 def dbReadCursor():
-    db = get_db()
+    db = get_db_read_only()
     db.autocommit = False
 
     cursor = db.cursor()

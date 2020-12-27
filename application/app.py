@@ -8,7 +8,8 @@ import sys
 
 from store.application.exceptions import errors
 from store.application.resources.user import UserRegister, UserLogin
-from store.application.resources.game import AddGame,SearchGame, AddKey
+from store.application.resources.game_admin import AddGame, AddKey
+from store.application.resources.game_public import SearchGame
 from store.application.resources.jwt import set_jwt_settings
 
 
