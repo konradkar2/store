@@ -3,7 +3,7 @@ from store.application.utils.db import dbReadCursor,dbTransactionCursor
 from datetime import datetime
 
 
-class TransactionModel():
+class UserTransactionModel():
     def __init__(self,user_id: int,date: str, _id = None):
         self.id = _id
         self.user_id = user_id
