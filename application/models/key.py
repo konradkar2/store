@@ -22,7 +22,7 @@ class KeyModel():
     @classmethod
     def find_by_key(cls,game_id: int, key: str):
         with dbReadCursor() as cursor:  
-            query = "SELECT * FROM mydb.keys WHERE keys.game_id = %s AND keys.key = %s"
+            query = "SELECT * FROM games_keys WHERE game_id = %s AND key = %s"
             params = (game_id,key)
             cursor.execute(query, params)
             keyData = cursor.fetchone()
@@ -35,11 +35,21 @@ class KeyModel():
 
     @classmethod
     def find_any_not_used(cls,game_id: int):
-        pass
+         with dbReadCursor() as cursor:  
+            query = "SELECT * FROM games_keys WHERE game_id = %s AND used = 0"
+            params = (game_id,)
+            cursor.execute(query, params)
+            keyData = cursor.fetchone()
+        
+        key = None
+        if keyData:
+            _id,game_id,used,key = keyData
+            key = KeyModel(game_id,key,used,_id)
+        return key
     
     def save_to_db(self):
         with dbTransactionCursor(self) as cursor:        
-            query = "INSERT INTO mydb.keys (keys.game_id, keys.used, keys.key) VALUES (%s, %s,%s)"
+            query = "INSERT INTO games_keys (game_id, used, key) VALUES (%s, %s,%s)"
             params = (self.game_id,self.used,self.key)
             cursor.execute(query, params)
 
