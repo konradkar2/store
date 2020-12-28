@@ -13,9 +13,9 @@ queries.append('delete from games_categories where id >0')
 queries.append('delete from categories where id >0')
 queries.append('delete from games where id >0')
 queries.append('delete from platforms where id >0')
-queries.append('delete from transactions where id >0')
+queries.append('delete from users_transactions where id >0')
 queries.append('delete from games_transactions where id >0')
-queries.append('delete from keys where id >0')
+queries.append('delete from games_keys where id >0')
 
 
 queries.append('ALTER TABLE platforms AUTO_INCREMENT =1;')
