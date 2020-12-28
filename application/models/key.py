@@ -18,11 +18,21 @@ class KeyModel():
             "used": self.used,
             "key": self.key
         }
-
+   
+    @classmethod 
+    def get_quantity(cls,game_id: int) -> int:   
+        quantity = 0     
+        with dbReadCursor() as cursor:  
+            query = "SELECT count(*) FROM games_keys WHERE game_id = %s AND used = 0"
+            params = (game_id,)
+            cursor.execute(query, params)
+            quantity = cursor.fetchone()   
+        return quantity[0]
+       
     @classmethod
     def find_by_key(cls,game_id: int, key: str):
         with dbReadCursor() as cursor:  
-            query = "SELECT * FROM games_keys WHERE game_id = %s AND key = %s"
+            query = "SELECT * FROM games_keys WHERE game_id = %s AND gkey = %s"
             params = (game_id,key)
             cursor.execute(query, params)
             keyData = cursor.fetchone()
@@ -35,7 +45,7 @@ class KeyModel():
 
     @classmethod
     def find_any_not_used(cls,game_id: int):
-         with dbReadCursor() as cursor:  
+        with dbReadCursor() as cursor:  
             query = "SELECT * FROM games_keys WHERE game_id = %s AND used = 0"
             params = (game_id,)
             cursor.execute(query, params)
@@ -49,7 +59,7 @@ class KeyModel():
     
     def save_to_db(self):
         with dbTransactionCursor(self) as cursor:        
-            query = "INSERT INTO games_keys (game_id, used, key) VALUES (%s, %s,%s)"
+            query = "INSERT INTO games_keys (game_id, used, gkey) VALUES (%s, %s,%s)"
             params = (self.game_id,self.used,self.key)
             cursor.execute(query, params)
 

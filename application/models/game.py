@@ -4,6 +4,7 @@ from typing import List
 
 from store.application.utils.db import dbReadCursor,dbTransactionCursor
 from store.application.models.game_category import GameCategoryModel
+from store.application.models.key import KeyModel
 #todo:verify email 
 #change "name" to "username" in database
 class GameModel():
@@ -33,6 +34,13 @@ class GameModel():
             "age_category": self.age_category,
             "categories" : [category.jsonMin() for category in GameCategoryModel.find_many_by_game_id(self.id)]  
         }
+    
+    def get_quantity(self) -> int:
+        if self.is_digital:
+            return KeyModel.get_quantity(self.id)
+        else:
+            return self.quantity
+    
     @classmethod
     def find_by_id(cls,_id: int) -> GameModel:
         with dbReadCursor() as cursor:

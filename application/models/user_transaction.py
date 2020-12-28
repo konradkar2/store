@@ -20,7 +20,7 @@ class UserTransactionModel():
     @classmethod
     def find_by_id(cls,_id):
         with dbReadCursor() as cursor:  
-            query = "SELECT * FROM transactions WHERE id = %s"
+            query = "SELECT * FROM users_transactions WHERE id = %s"
             params = (_id,)
             cursor.execute(query, params)
             transactionData = cursor.fetchone()
@@ -34,7 +34,7 @@ class UserTransactionModel():
     @classmethod
     def find_by_user_id(cls,user_id: int):
         with dbReadCursor() as cursor:  
-            query = "SELECT * FROM transactions WHERE user_id = %s"
+            query = "SELECT * FROM users_transactions WHERE user_id = %s"
             params = (user_id,)
             cursor.execute(query, params)
             transactionsData = cursor.fetchall()
@@ -49,6 +49,6 @@ class UserTransactionModel():
     
     def save_to_db(self):
         with dbTransactionCursor(self) as cursor:        
-            query = "INSERT INTO transactions (user_id,date) VALUES (%s, %s)"
+            query = "INSERT INTO users_transactions (user_id,date) VALUES (%s, %s)"
             params = (self.user_id,self.date)
             cursor.execute(query, params)

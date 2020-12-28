@@ -9,7 +9,7 @@ import sys
 from store.application.exceptions import errors
 from store.application.resources.user import UserRegister, UserLogin
 from store.application.resources.game_admin import AddGame, AddKey
-from store.application.resources.game_public import SearchGame
+from store.application.resources.game_public import SearchGame,BuyGames
 from store.application.resources.jwt import set_jwt_settings
 
 
@@ -57,6 +57,7 @@ api.add_resource(UserLogin,'/auth')
 
 api.add_resource(AddGame,'/addgame')
 api.add_resource(SearchGame,'/games')
+api.add_resource(BuyGames,'/buy')
 api.add_resource(AddKey,'/addkey')
 
 if __name__ == '__main__':
