@@ -28,7 +28,7 @@ class AddGame(Resource):
         "release_date", type=str, required=True, help="This field cannot be left blank!"
     )
     parser.add_argument(
-        "is_digital", type=bool,  required=True, help="This field cannot be left blank!"
+        "is_digital", type=lambda x: x if (int(x) == 0 or int(x) == 1) else False,  required=True, help="This field cannot be left blank!"
     )    
     parser.add_argument(
         "platform_id", type=int, required=True, help="This field cannot be left blank!"
