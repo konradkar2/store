@@ -22,10 +22,16 @@ class UserRegister(Resource):
     def post(cls):
         data = cls.parser.parse_args()
 
+        if len(data["username"]) < 6:
+            return {"message": "Username too short"}, 400
+        if len(data["password"]) < 6:
+            return {"message": "Password too short"}, 400
+
         if UserModel.find_by_username(data["username"]):
             return {"message": "User already exists"}, 400
         if UserModel.find_by_email(data["email"]):
             return {"message": "This email is already taken"}, 400
+
         try:
             password_hash, salt = encrypt_base64(data['password'])            
             role = 'user'

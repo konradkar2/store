@@ -45,16 +45,16 @@ class UserModel():
         user = None
         if(userData):
             _id,username,email,role,_hash,salt = userData
-            user = UserModel(username,email,role,_hash,salt,_id)       
+            user = UserModel(username,email,role,_hash,salt,_id)
             
         return user
-    
+
     def save_to_db(self):
         with dbTransactionCursor(self) as cursor:        
             query = "INSERT INTO users (name, email,role, password_hash, salt) VALUES (%s, %s,%s,%s,%s)"
             params = (self.username,self.email,self.role,self.password_hash,self.salt)
             cursor.execute(query, params)
-            
+
        
 
         
