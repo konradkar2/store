@@ -9,7 +9,8 @@ from store.application.models.game import GameModel
 from store.application.models.game_transaction import GameTransactionModel
 from store.application.models.user_transaction import UserTransactionModel
 from store.application.models.key import KeyModel
-
+from store.application.models.category import CategoryModel
+from store.application.models.platform import PlatformModel
 from store.application.exceptions import InternalServerError, BadRequestError
 
 def shopping_cart_validator(value):
@@ -22,6 +23,39 @@ def shopping_cart_validator(value):
         return value
     else:
         raise ValueError(json.dumps(v.errors))
+
+def search_filter_validator(value):
+    filter_schema = {
+        'title' : {'required': False, 'type' : 'string'},
+        'categories_id' : {'required' : False, 'type' : ['integer','list']},
+        'platforms_id' : {'required' : False, 'type' : ['integer','list']},
+        'order_by' : {'required' : False, 'type': 'string', 'allowed' : ['price','name']},
+        'order_rule' :{'required' : False, 'type': 'string', 'allowed' : ['asc','desc']}
+    }
+    v = Validator(filter_schema)
+    if v.validate(value):
+        return value
+    else:
+        raise ValueError(json.dumps(v.errors))
+
+class AdvancedSearchGame(Resource):
+    parser = reqparse.RequestParser()
+    parser.add_argument('search_filter', type=search_filter_validator)
+
+    @classmethod
+    def post(cls):
+        try:
+            data = cls.parser.parse_args()       
+            if data['search_filter'] is None:
+                return {'message' : 'Search filter cannot be empty'},400
+            
+            print(data)
+            return 200
+
+        except Exception as e:
+            raise InternalServerError(e)
+        
+
 
 
 class SearchGame(Resource):
@@ -39,6 +73,42 @@ class SearchGame(Resource):
                 'games' : [game.json() for game in games]}
         except Exception as e:
             raise InternalServerError(e)
+
+
+class FetchCategories(Resource):
+    @classmethod
+    def get(cls):       
+        try:
+            categories = CategoryModel.find_all()    
+            return {                
+                'categories' : [category.json() for category in categories]}
+        except Exception as e:
+            raise InternalServerError(e)
+
+
+class FetchPlatforms(Resource):
+    @classmethod
+    def get(cls):       
+        try:
+            platforms = PlatformModel.find_all()    
+            return {                
+                'platforms' : [platform.json() for platform in platforms]}
+        except Exception as e:
+            raise InternalServerError(e)
+
+class FetchGame(Resource):
+    @classmethod
+    def get(cls,game_id):
+        try:
+            game = GameModel.find_by_id(game_id)    
+            if game is None:
+                return {"message" : "Game of id {_id} not found.".format(_id=game_id)}, 404
+            
+            return { "game" : game.json() }
+        except Exception as e:
+            raise InternalServerError(e)
+        
+
 
 class BuyGames(Resource):
     parser = reqparse.RequestParser()

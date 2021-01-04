@@ -44,11 +44,10 @@ class PlatformModel:
             
         return platform
     @classmethod
-    def find_all(cls,game_id: int) -> List[PlatformModel]:
+    def find_all(cls,) -> List[PlatformModel]:
         with dbReadCursor() as cursor:    
-            query = "SELECT * FROM platforms"
-            params = (game_id,)
-            cursor.execute(query, params)
+            query = "SELECT * FROM platforms"           
+            cursor.execute(query)
             platformData = cursor.fetchall()
         
         platforms = []

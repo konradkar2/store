@@ -106,44 +106,38 @@ class UserTest(TestCase):
     #         print(login.data)
 
     @print_test_time_elapsed
-    def test_gamemodel(self):
-        test_cat = CategoryModel("Kategoria testowa")
-        # test_cat.save_to_db()
+    def test_gamemodel(self):        
 
-        test_platform = PlatformModel("PC")
-        # test_platform.save_to_db()
+        username = "admin1"        
+        password = "admin1"
+        
 
-        username = "test-admin"
-        email = "testadmin@gmail.com"
-        password = "admin"
-        role = 'admin'
-
-        password_hash, salt = encrypt_base64(password)
-        admin = UserModel(username, email, role, password_hash, salt)
-        # admin.save_to_db()
-
+       
         post_data = {'username' : username, 'password' : password}
-        login = self.client.post('/auth', data=post_data)
-        print(login.data)
-        my_json = login.data.decode('utf8').replace("'", '"')
-        print(my_json[18:329])
-        #
-        # name = "Tomb Raider"
-        # price = 200.0
-        # quantity = "10"
-        # description = "Good game"
-        # release_date = "Jutro"
-        # is_digital = False
-        # platform_id = 1
-        # age_category = "PEGI 3"
-        # categories = "Kategoria testowa"
-        #
-        # post_data = {'name' : name, 'price' : price, 'quantity' : quantity, 'description' : description,
-        #              'release_date' : release_date, 'is_digital' : is_digital, 'platform_id' : platform_id,
-        #              'age_category' : age_category, 'categories' : categories}
-        #
-        # rv = self.client.post('/addgame', data=post_data)
-        # assert rv.status_code == 201
+        login = self.client.post('/auth', data=post_data)    
+        token = login.data.decode('utf8')
+        token = json.loads(token)
+        token = token['access_token']
+        
+        
+        name = "Tomb Raider"
+        price = 200.0
+        quantity = "10"
+        description = "Good game"
+        release_date = "Jutro"
+        is_digital = False
+        platform_id = 1
+        age_category = "PEGI 3"
+        categories = 1
+        
+        post_data = {'name' : name, 'price' : price, 'quantity' : quantity, 'description' : description,
+                     'release_date' : release_date, 'is_digital' : is_digital, 'platform_id' : platform_id,
+                     'age_category' : age_category, 'categories' : categories}
+        post_headers = {'Authorization' : 'Bearer ' + token}
+       
+        rv = self.client.post('/addgame', data=post_data,headers=post_headers)
+        print(rv.data)
+        assert rv.status_code == 201
 
 
 

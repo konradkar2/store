@@ -44,11 +44,10 @@ class CategoryModel:
             
         return category
     @classmethod
-    def find_all(cls,game_id: int) -> List[CategoryModel]:
+    def find_all(cls) -> List[CategoryModel]:
         with dbReadCursor() as cursor:    
-            query = "SELECT * FROM categories"
-            params = (game_id,)
-            cursor.execute(query, params)
+            query = "SELECT * FROM categories"            
+            cursor.execute(query)
             categoryData = cursor.fetchall()
         
         categories = []

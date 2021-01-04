@@ -18,9 +18,6 @@ queries.append('delete from games where id >0')
 queries.append('delete from platforms where id >0')
 
 
-
-
-
 queries.append('ALTER TABLE platforms AUTO_INCREMENT =1;')
 queries.append('ALTER TABLE categories AUTO_INCREMENT =1;')
 
