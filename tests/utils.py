@@ -20,3 +20,8 @@ def get_random_string(length):
     result_str = ''.join(random.choice(letters) for i in range(length))
 
     return result_str
+
+def get_token_from_response(response):
+    token = response.data.decode('utf8')
+    token = json.loads(token)
+    return token["access_token"]
