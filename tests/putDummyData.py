@@ -23,7 +23,7 @@ queries.append('ALTER TABLE categories AUTO_INCREMENT =1;')
 
 for query in queries:
     cursor.execute(query)
-    db.commit()
+    
 
 username = "admin1"
 email = "admin1@gmail.com"
@@ -32,18 +32,20 @@ role = 'admin'
 
 password_hash, salt = encrypt_base64(password)       
 user = UserModel(username,email,role,password_hash,salt)
-user.save_to_db()
+user.save_to_db(cursor)
 
 categories = ['action','rpg','rts','sport']
 
 for categoryName in categories:
     category = CategoryModel(categoryName)
-    category.save_to_db()
+    category.save_to_db(cursor)
 
 platforms = ['pc','ps4','ps5','xbox-one','xbox-s']
 for platformName in platforms:
     platform = PlatformModel(platformName)
-    platform.save_to_db()
+    platform.save_to_db(cursor)
+
+db.commit()
 
 
 

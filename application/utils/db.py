@@ -25,25 +25,6 @@ def get_db_read_only():
     return mydb
 
 
-@contextmanager
-def dbTransactionCursor(obj = None):
-    db = get_db()
-    db.autocommit = False
-
-    cursor = db.cursor()
-    try:
-        yield cursor
-    except Exception:        
-        db.rollback()
-        raise 
-    else:
-        db.commit()  
-        if obj:
-            obj.id = cursor.lastrowid
-    finally:        
-        if db.is_connected():
-            cursor.close()
-            db.close()
 
 @contextmanager
 def dbCursor():
@@ -63,20 +44,3 @@ def dbCursor():
             cursor.close()
             db.close()
 
-@contextmanager
-def dbReadCursor():
-    db = get_db_read_only()
-    db.autocommit = False
-
-    cursor = db.cursor()
-    try:
-        yield cursor
-    except Exception:        
-        db.rollback()
-        raise 
-    else:
-        db.commit()          
-    finally:        
-        if db.is_connected():
-            cursor.close()
-            db.close()
