@@ -13,7 +13,7 @@ from store.application.resources.user import UserLogin
 from store.application.resources.game_admin import AddGame, AddKey
 from store.application.utils.security import encrypt_base64, verifyHash_base64
 
-
+from store.tests.putDummyData import resetDb
 class UserTest(TestCase):
     def setUp(self):
         print(app)
@@ -103,6 +103,7 @@ class UserTest(TestCase):
         post_data = {'game_id': fake_id, 'key': klucz2}
         rv = self.client.post('/addkey', data=post_data, headers=post_headers)
 
+        resetDb()
        
 
 
