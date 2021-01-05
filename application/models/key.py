@@ -25,7 +25,7 @@ class KeyModel():
         query = "SELECT count(*) FROM games_keys WHERE game_id = %s AND used = 0"
         params = (game_id,)
         cursor.execute(query, params)
-        quantity = cursor.fetchone()   
+        quantity = cursor.fetchone()           
         return quantity[0]
        
     @classmethod

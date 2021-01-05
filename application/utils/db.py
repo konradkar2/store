@@ -15,15 +15,6 @@ def get_db():
     database=db_settings['database']
     )
     return mydb
-def get_db_read_only():
-    mydb = mysql.connector.connect(
-    host=db_settings['host'],
-    user=db_settings['user'],
-    password=db_settings['password'],
-    database=db_settings['database']
-    )
-    return mydb
-
 
 
 @contextmanager
@@ -31,7 +22,7 @@ def dbCursor():
     db = get_db()
     db.autocommit = False
 
-    cursor = db.cursor()
+    cursor = db.cursor(buffered=True)
     try:
         yield cursor
     except Exception:        

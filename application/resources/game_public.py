@@ -136,8 +136,7 @@ class BuyGames(Resource):
                     game = GameModel.find_by_id(cursor,game_id)
                     if game is None:
                         return {"message" : "Game of id {game_id} not found.".format(game_id=game_id)}, 400
-                    quantity_in_db = game.get_quantity(cursor)
-                    
+                    quantity_in_db = game.get_quantity(cursor)                    
                     if quantity_in_db < quantity:
                         return {"message" : "Game of id {game_id} is available only in {quantity} pieces.".format(game_id=game_id,quantity=quantity_in_db)}, 400
                 
