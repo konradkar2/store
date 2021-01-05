@@ -1,5 +1,5 @@
 from __future__ import annotations
-from store.application.utils.db import dbReadCursor,dbTransactionCursor
+
 
 #todo:verify email 
 #change "name" to "username" in database
@@ -21,13 +21,12 @@ class UserModel():
             "email" : self.email,            
         }
     @classmethod
-    def find_by_username(cls,username: str) -> UserModel:
-        with dbReadCursor() as cursor:        
-            query = "SELECT * FROM users WHERE name = %s"
-            params = (username,)
-            cursor.execute(query, params)
-            userData = cursor.fetchone()
-        
+    def find_by_username(cls,cursor,username: str) -> UserModel:                
+        query = "SELECT * FROM users WHERE name = %s"
+        params = (username,)
+        cursor.execute(query, params)
+        userData = cursor.fetchone()
+    
         user = None
         if(userData):
             _id,username,email,role,_hash,salt = userData
@@ -35,12 +34,11 @@ class UserModel():
             
         return user
     @classmethod
-    def find_by_email(cls,email: str) -> UserModel:
-        with dbReadCursor() as cursor:
-            query = "SELECT * FROM users WHERE email = %s"
-            params = (email,)
-            cursor.execute(query, params)
-            userData = cursor.fetchone()
+    def find_by_email(cls,cursor,email: str) -> UserModel:       
+        query = "SELECT * FROM users WHERE email = %s"
+        params = (email,)
+        cursor.execute(query, params)
+        userData = cursor.fetchone()
         
         user = None
         if(userData):
@@ -49,11 +47,13 @@ class UserModel():
             
         return user
 
-    def save_to_db(self):
-        with dbTransactionCursor(self) as cursor:        
-            query = "INSERT INTO users (name, email,role, password_hash, salt) VALUES (%s, %s,%s,%s,%s)"
-            params = (self.username,self.email,self.role,self.password_hash,self.salt)
-            cursor.execute(query, params)
+    def save_to_db(self,cursor):              
+        query = "INSERT INTO users (name, email,role, password_hash, salt) VALUES (%s, %s,%s,%s,%s)"
+        params = (self.username,self.email,self.role,self.password_hash,self.salt)
+        cursor.execute(query, params)
+        self.id = cursor.lastrowid
+        
+        
 
        
 

@@ -2,7 +2,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import List
 
-from store.application.utils.db import dbReadCursor,dbTransactionCursor
+
 
 
 class CategoryModel:
@@ -16,12 +16,11 @@ class CategoryModel:
             "id": self.id           
         }
     @classmethod
-    def find_by_id(cls,_id: int) -> CategoryModel:
-        with dbReadCursor() as cursor:              
-            query = "SELECT * FROM categories WHERE id = %s"
-            params = (_id,)
-            cursor.execute(query, params)
-            categoryData = cursor.fetchone()
+    def find_by_id(cls,cursor,_id: int) -> CategoryModel:                   
+        query = "SELECT * FROM categories WHERE id = %s"
+        params = (_id,)
+        cursor.execute(query, params)
+        categoryData = cursor.fetchone()
 
         category = None
         if(categoryData):
@@ -30,12 +29,11 @@ class CategoryModel:
             
         return category
     @classmethod
-    def find_by_name(cls,name: str) -> CategoryModel:
-        with dbReadCursor() as cursor:              
-            query = "SELECT * FROM categories WHERE name = %s"
-            params = (_id,)
-            cursor.execute(query, params)
-            categoryData = cursor.fetchone()
+    def find_by_name(cls,cursor,name: str) -> CategoryModel:                 
+        query = "SELECT * FROM categories WHERE name = %s"
+        params = (_id,)
+        cursor.execute(query, params)
+        categoryData = cursor.fetchone()
 
         category = None
         if(categoryData):
@@ -44,11 +42,10 @@ class CategoryModel:
             
         return category
     @classmethod
-    def find_all(cls) -> List[CategoryModel]:
-        with dbReadCursor() as cursor:    
-            query = "SELECT * FROM categories"            
-            cursor.execute(query)
-            categoryData = cursor.fetchall()
+    def find_all(cls,cursor) -> List[CategoryModel]:         
+        query = "SELECT * FROM categories"            
+        cursor.execute(query)
+        categoryData = cursor.fetchall()
         
         categories = []
         for row in categoryData:
@@ -57,8 +54,8 @@ class CategoryModel:
             categories.append(category)          
         
         return categories    
-    def save_to_db(self):
-        with dbTransactionCursor(self) as cursor:        
-            query = "INSERT INTO categories (name) VALUES (%s)"
-            params = (self.name,)
-            cursor.execute(query, params)
+    def save_to_db(self,cursor):         
+        query = "INSERT INTO categories (name) VALUES (%s)"
+        params = (self.name,)
+        cursor.execute(query, params)
+        self.id = cursor.lastrowid

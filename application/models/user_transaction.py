@@ -1,5 +1,4 @@
 from __future__ import annotations
-from store.application.utils.db import dbReadCursor,dbTransactionCursor
 from datetime import datetime
 
 
@@ -18,12 +17,11 @@ class UserTransactionModel():
         }
 
     @classmethod
-    def find_by_id(cls,_id):
-        with dbReadCursor() as cursor:  
-            query = "SELECT * FROM users_transactions WHERE id = %s"
-            params = (_id,)
-            cursor.execute(query, params)
-            transactionData = cursor.fetchone()
+    def find_by_id(cls,cursor,_id):        
+        query = "SELECT * FROM users_transactions WHERE id = %s"
+        params = (_id,)
+        cursor.execute(query, params)
+        transactionData = cursor.fetchone()
         
         transaction = None
         if transactionData:
@@ -32,12 +30,11 @@ class UserTransactionModel():
         return transaction
 
     @classmethod
-    def find_by_user_id(cls,user_id: int):
-        with dbReadCursor() as cursor:  
-            query = "SELECT * FROM users_transactions WHERE user_id = %s"
-            params = (user_id,)
-            cursor.execute(query, params)
-            transactionsData = cursor.fetchall()
+    def find_by_user_id(cls,cursor,user_id: int):       
+        query = "SELECT * FROM users_transactions WHERE user_id = %s"
+        params = (user_id,)
+        cursor.execute(query, params)
+        transactionsData = cursor.fetchall()
         
         transactions = []
         for tData in transactionsData:
@@ -47,8 +44,8 @@ class UserTransactionModel():
         
         return transactions
     
-    def save_to_db(self):
-        with dbTransactionCursor(self) as cursor:        
-            query = "INSERT INTO users_transactions (user_id,date) VALUES (%s, %s)"
-            params = (self.user_id,self.date)
-            cursor.execute(query, params)
+    def save_to_db(self,cursor):          
+        query = "INSERT INTO users_transactions (user_id,date) VALUES (%s, %s)"
+        params = (self.user_id,self.date)
+        cursor.execute(query, params)
+        self.id = cursor.lastrowid

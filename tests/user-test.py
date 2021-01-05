@@ -33,7 +33,6 @@ class UserTest(TestCase):
         return app
 
     @print_test_time_elapsed
-<<<<<<< HEAD
     def test_gamemodel(self):        
 
         username = "admin1"        
@@ -48,109 +47,6 @@ class UserTest(TestCase):
         token = token['access_token']
         
         
-=======
-    def test_create_user(self):
-        username = 'user-test'
-        password = 'user-test'
-        email = 'user-test@gmail.com'
-
-        with dbTransactionCursor(self) as cursor:
-            print("Czyszczenie bazy po testach")
-            query = "delete from users where name like 'user-test%'"
-            cursor.execute(query)
-
-        try:
-            print("Poprawne tworzenie usera")
-            post_data = {'username': username, 'password': password, 'email': email}
-            rv = self.client.post('/register', data=post_data)
-            print(rv.data)
-            assert rv.status_code == 201
-        except:
-            pass
-
-        try:
-            print("Tworzenie usera bez hasła")
-            post_data = {'username': username, 'password': '', 'email': email}
-            rv = self.client.post('/register', data=post_data)
-            print(rv.data)
-            assert rv.status_code == 201
-        except:
-            pass
-
-        try:
-            print("Tworzenie usera bez nazwy")
-            post_data = {'username': '', 'password': password, 'email': email}
-            rv = self.client.post('/register', data=post_data)
-            print(rv.data)
-            assert rv.status_code == 201
-        except:
-            pass
-
-        try:
-            print("Tworzenie usera z istniejącym mailem")
-            post_data = {'username': username + 'abc', 'password': password, 'email': email}
-            rv = self.client.post('/register', data=post_data)
-            print(rv.data)
-            assert rv.status_code == 201
-        except:
-            pass
-
-        try:
-            print("Tworzenie usera z istniejącym usernamem")
-            post_data = {'username': username, 'password': password, 'email': email + 'abc'}
-            rv = self.client.post('/register', data=post_data)
-            print(rv.data)
-            assert rv.status_code == 201
-        except:
-            pass
-
-        print("Stworzenie 5 userów")
-        user_count = 5
-        for i in range(user_count):
-            username = 'user-test-' + str(i)
-            password = 'user-test-' + str(i)
-            email = 'user-test-' + str(i) + '@gmail.com'
-
-            post_data = {'username': username, 'password': password, 'email': email}
-            rv = self.client.post('/register', data=post_data)
-            print(rv.data)
-            assert rv.status_code == 201
-            print(UserModel.find_by_username(username).username)
-
-            post_data = {'username': username, 'password': password}
-            login = self.client.post('/auth', data=post_data)
-            login = self.client.post('/auth', data=post_data)
-            token = login.data.decode('utf8')
-            token = json.loads(token)
-            print(token["access_token"])
-
-        with dbTransactionCursor(self) as cursor:
-            print("Czyszczenie bazy po testach")
-            query = "delete from users where name like 'user-test%'"
-            cursor.execute(query)
-
-    @print_test_time_elapsed
-    def test_game_model(self):
-        username = 'user-test'
-        password = 'user-test'
-        email = 'user-test@gmail.com'
-
-        post_data = {'username': username, 'password': password, 'email': email}
-        rv = self.client.post('/register', data=post_data)
-        post_data = {'username': username, 'password': password}
-        response = self.client.post('/auth', data=post_data)
-        token_user = get_token_from_response(response)
-
-        username = "admin1"
-        email = "admin1@gmail.com"
-        password = "admin1"
-        role = 'admin'
-
-        post_data = {'username': username, 'password': password}
-        response = self.client.post('/auth', data=post_data)
-        token_admin = get_token_from_response(response)
-
->>>>>>> ad61fdbbd215405f9433cc1efa0e946daf5d5bf9
         name = "Tomb Raider"
         price = 200.0
         quantity = "10"

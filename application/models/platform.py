@@ -2,9 +2,6 @@ from __future__ import annotations
 from datetime import datetime
 from typing import List
 
-from store.application.utils.db import dbReadCursor,dbTransactionCursor
-
-
 class PlatformModel:
     def __init__(self,name: str, _id=None):
         self.name = name
@@ -16,12 +13,12 @@ class PlatformModel:
             "id": self.id           
         }
     @classmethod
-    def find_by_id(cls,_id: int) -> PlatformModel:
-        with dbReadCursor() as cursor:              
-            query = "SELECT * FROM platforms WHERE id = %s"
-            params = (_id,)
-            cursor.execute(query, params)
-            platformData = cursor.fetchone()
+    def find_by_id(cls,cursor,_id: int) -> PlatformModel:
+                
+        query = "SELECT * FROM platforms WHERE id = %s"
+        params = (_id,)
+        cursor.execute(query, params)
+        platformData = cursor.fetchone()
 
         platform = None
         if(platformData):
@@ -30,12 +27,11 @@ class PlatformModel:
             
         return platform
     @classmethod
-    def find_by_name(cls,name: str) -> PlatformModel:
-        with dbReadCursor() as cursor:              
-            query = "SELECT * FROM platforms WHERE name = %s"
-            params = (_id,)
-            cursor.execute(query, params)
-            platformData = cursor.fetchone()
+    def find_by_name(cls,cursor,name: str) -> PlatformModel:                     
+        query = "SELECT * FROM platforms WHERE name = %s"
+        params = (_id,)
+        cursor.execute(query, params)
+        platformData = cursor.fetchone()
 
         platform = None
         if(platformData):
@@ -44,11 +40,10 @@ class PlatformModel:
             
         return platform
     @classmethod
-    def find_all(cls,) -> List[PlatformModel]:
-        with dbReadCursor() as cursor:    
-            query = "SELECT * FROM platforms"           
-            cursor.execute(query)
-            platformData = cursor.fetchall()
+    def find_all(cls,cursor) -> List[PlatformModel]:       
+        query = "SELECT * FROM platforms"           
+        cursor.execute(query)
+        platformData = cursor.fetchall()
         
         platforms = []
         for row in platformData:
@@ -57,8 +52,8 @@ class PlatformModel:
             platforms.append(platform)          
         
         return platforms    
-    def save_to_db(self):
-        with dbTransactionCursor(self) as cursor:        
-            query = "INSERT INTO platforms (name) VALUES (%s)"
-            params = (self.name,)
-            cursor.execute(query, params)
+    def save_to_db(self,cursor):             
+        query = "INSERT INTO platforms (name) VALUES (%s)"
+        params = (self.name,)
+        cursor.execute(query, params)
+        self.id = cursor.lastrowid

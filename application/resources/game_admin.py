@@ -10,6 +10,9 @@ from store.application.models.key import KeyModel
 from store.application.resources.authorize import require_admin
 from store.application.exceptions import InternalServerError, BadRequestError
 from store.application.models.category import CategoryModel
+from store.application.utils.db import dbCursor
+
+
 class AddGame(Resource):
     parser = reqparse.RequestParser()
     parser.add_argument(
@@ -52,15 +55,16 @@ class AddGame(Resource):
             data['release_date'] = now.strftime('%Y-%m-%d %H:%M:%S')
             categories = data.pop('categories')
             game = GameModel(**data)
-            game.save_to_db()
-            #create categories for the game.id
-            if game.id:
-                for category_id in categories:
-                    category = CategoryModel.find_by_id(category_id)
-                    if category is None:
-                        return {'message': 'Category with id {category_id} not found'.format(category_id=category_id)}, 400
-                    game_category = GameCategoryModel(game.id,category_id)
-                    game_category.save_to_db()
+            with dbCursor() as cursor:
+                game.save_to_db(cursor)
+                #create categories for the game.id
+                if game.id:
+                    for category_id in categories:
+                        category = CategoryModel.find_by_id(cursor,category_id)
+                        if category is None:
+                            return {'message': 'Category with id {category_id} not found'.format(category_id=category_id)}, 400
+                        game_category = GameCategoryModel(game.id,category_id)
+                        game_category.save_to_db(cursor)
         except mysql.connector.Error as e:
             raise InternalServerError(e)
         except ValueError as e:
@@ -88,19 +92,20 @@ class AddKey(Resource):
         game_id = data['game_id']
         
         try:
-            game = GameModel.find_by_id(game_id)
-            if game is None:
-                return {'message' : "Error when appending a key, game id not found"}, 404
-            if game.is_digital == False:
-                return {'message' : "Error when appending a key, game of id {game_id} is not digital".format(game_id=game_id)}, 404
-            key = KeyModel.find_by_key(game_id,key_str)
-            if key:
-                return {'message' : "Error when appending a key, already in database", "key" : key.json()}, 401   
+            with dbCursor() as cursor:
+                game = GameModel.find_by_id(cursor,game_id)
+                if game is None:
+                    return {'message' : "Error when appending a key, game id not found"}, 404
+                if game.is_digital == False:
+                    return {'message' : "Error when appending a key, game of id {game_id} is not digital".format(game_id=game_id)}, 404
+                key = KeyModel.find_by_key(cursor,game_id,key_str)
+                if key:
+                    return {'message' : "Error when appending a key, already in database", "key" : key.json()}, 401   
 
-            key = KeyModel(game_id,key_str)                  
-            key.save_to_db()
+                key = KeyModel(game_id,key_str)                  
+                key.save_to_db(cursor)
 
-            return {'message': 'Key added sucessfully.'}, 201
+                return {'message': 'Key added sucessfully.'}, 201
 
         except Exception as e:
             raise InternalServerError(e)
