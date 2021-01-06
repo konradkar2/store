@@ -1,4 +1,5 @@
 from flask import Flask,jsonify,got_request_exception
+from flask_cors import CORS
 from flask_restful import Resource, Api
 from flask_jwt_extended import JWTManager
 import logging
@@ -37,6 +38,7 @@ def log_exception(sender, exception, **extra):
 
 
 app = Flask(__name__)
+CORS(app)
 app.config['JWT_SECRET_KEY'] = 'tajnykluczyk'
 
 got_request_exception.connect(log_exception, app)
