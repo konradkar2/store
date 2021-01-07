@@ -53,6 +53,44 @@ class GameModel():
             
         return game
     @classmethod
+    def find_many_by_filter(cls,cursor,name: str,categories_id: tuple(str),
+                    platforms_id: tuple(str),order_by: str,order_rule: str):
+
+        if order_by not in ('price','name') or order_rule not in ('ASC,DESC,asc,desc'):
+            raise Exception
+        
+        query = """SELECT * FROM games g
+        WHERE g.name LIKE %s        
+        AND g.platform_id IN (%s)
+        AND g.id in (select gc.game_id from games_categories gc where gc.game_id = g.id and gc.category_id in (%s))"""
+
+        query += "ORDER BY {c} {r}".format(c=order_by,r=order_rule)
+
+        categories = ', '.join('{0}'.format(c) for c in categories_id)
+        platforms = ', '.join('{0}'.format(p) for p in platforms_id)    
+
+        print(categories)
+        print(platforms)   
+
+        params = ('%' + name + '%',platforms,categories)
+        cursor.execute(query, params)
+        q = cursor.statement
+        print(q)
+
+        gameData = cursor.fetchall()
+
+
+
+        games = []
+        for row in gameData:          
+            _id,name,price,quantity,description,release_date,is_digital,platform_id,age_category = row
+            game = GameModel(name,price,quantity,description,release_date,is_digital,platform_id,age_category,_id)  
+            games.append(game)
+
+        return games
+        
+
+    @classmethod
     def find_many_by_name(cls,cursor,name: str) -> List[GameModel]:      
         query = "SELECT * FROM games WHERE name LIKE %s"
         params = (name + "%",)

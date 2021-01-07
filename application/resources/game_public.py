@@ -27,11 +27,11 @@ def shopping_cart_validator(value):
 
 def search_filter_validator(value):
     filter_schema = {
-        'title' : {'required': False, 'type' : 'string'},
+        'name' : {'required': False, 'type' : 'string'},
         'categories_id' : {'required' : False, 'type' : ['integer','list']},
         'platforms_id' : {'required' : False, 'type' : ['integer','list']},
         'order_by' : {'required' : False, 'type': 'string', 'allowed' : ['price','name']},
-        'order_rule' :{'required' : False, 'type': 'string', 'allowed' : ['asc','desc']}
+        'order_rule' :{'required' : False, 'type': 'string', 'allowed' : ['ASC','DESC']}
     }
     v = Validator(filter_schema)
     if v.validate(value):
@@ -45,14 +45,22 @@ class AdvancedSearchGame(Resource):
 
     @classmethod
     def post(cls):
+        data = cls.parser.parse_args()   
         try:
-            data = cls.parser.parse_args()       
             if data['search_filter'] is None:
                 return {'message' : 'Search filter cannot be empty'},400
-            
-            print(data)
-            return 200
-
+            with dbCursor() as cursor: 
+                data = data['search_filter']               
+                name = data['name']
+                categories_id = tuple(data['categories_id'],)
+                platforms_id = tuple(data['platforms_id'],)
+                order_by = data['order_by']
+                order_rule = data['order_rule']            
+                games = GameModel.find_many_by_filter(cursor,name,categories_id,platforms_id,order_by,order_rule)
+                return {
+                    'result_count' : len(games),
+                    'games' : [game.json() for game in games]}            
+               
         except Exception as e:
             raise InternalServerError(e)
         
