@@ -58,7 +58,7 @@ class GameModel():
 
         if order_by not in ('price','name') or order_rule not in ('ASC,DESC,asc,desc'):
             raise Exception
-        
+
         query = """SELECT * FROM games g
         WHERE g.name LIKE %s        
         AND g.platform_id IN (%s)
@@ -68,14 +68,10 @@ class GameModel():
 
         categories = ', '.join('{0}'.format(c) for c in categories_id)
         platforms = ', '.join('{0}'.format(p) for p in platforms_id)    
-
-        print(categories)
-        print(platforms)   
-
+        
         params = ('%' + name + '%',platforms,categories)
         cursor.execute(query, params)
-        q = cursor.statement
-        print(q)
+        
 
         gameData = cursor.fetchall()
 
