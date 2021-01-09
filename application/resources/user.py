@@ -61,7 +61,7 @@ class UserLogin(Resource):
 
             if result:
                 claims = {'role' : user.role}
-                access_token = create_access_token(identity=user.id,user_claims=claims,fresh=True)
+                access_token = create_access_token(identity=user.id,user_claims=claims,fresh=True,expires_delta=False)
                 #refresh_token = create_refresh_token(user.id)
                 return {
                     'access_token': access_token,
