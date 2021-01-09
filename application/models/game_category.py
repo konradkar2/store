@@ -9,8 +9,14 @@ class GameCategoryModel:
         self.game_id = game_id
         self.category_id = category_id
         self.id = _id
-       
-    def json(self):        
+    
+    def json(self,cursor):
+        category = CategoryModel.find_by_id(cursor,self.category_id)       
+        return {                      
+            "category_id" : self.category_id,
+            "category_name": category.name          
+        }
+    def jsonMin(self):        
         return {            
             "game_id": self.game_id,    
             "category_id" : self.category_id                       

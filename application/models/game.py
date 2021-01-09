@@ -22,15 +22,15 @@ class GameModel():
         
         self.id = _id
         
-    def json(self):       
+    def json(self,cursor):       
         return {
             "id": self.id,
             "name": self.name,
             "price": float(self.price),
             "quantity": self.quantity,
             "is_digital" : self.is_digital,
-            "age_category": self.age_category,    
-            #"categories" : [category.jsonMin() for category in GameCategoryModel.find_many_by_game_id(self.id)]          
+            "age_category": self.age_category,
+            "categories" : [category.json(cursor) for category in GameCategoryModel.find_many_by_game_id(cursor,self.id)]     
         }
     
     def get_quantity(self,cursor) -> int:
@@ -53,29 +53,46 @@ class GameModel():
             
         return game
     @classmethod
-    def find_many_by_filter(cls,cursor,name: str,categories_id: tuple(str),
-                    platforms_id: tuple(str),order_by: str,order_rule: str):
+    def find_many_by_filter(cls,cursor,number_per_page,page_number: int,name: str,categories_id: List[str],
+                    platforms_id: List[str],order_by: str,order_rule: str):
+        
+        limit = number_per_page
+        offset  = (page_number -1 ) * number_per_page
 
+        if order_by is None:
+            order_by = 'name'
+        if order_rule is None:
+            order_rule = 'ASC'
         if order_by not in ('price','name') or order_rule not in ('ASC,DESC,asc,desc'):
-            raise Exception
+            raise Exception        
 
-        query = """SELECT * FROM games g
-        WHERE g.name LIKE %s        
-        AND g.platform_id IN (%s)
-        AND g.id in (select gc.game_id from games_categories gc where gc.game_id = g.id and gc.category_id in (%s))"""
+        #create query
+        query = "SELECT SQL_CALC_FOUND_ROWS * FROM games g\n"          
+        query += "WHERE g.name LIKE %s\n"
 
-        query += "ORDER BY {c} {r}".format(c=order_by,r=order_rule)
-
-        categories = ', '.join('{0}'.format(c) for c in categories_id)
-        platforms = ', '.join('{0}'.format(p) for p in platforms_id)    
+        if platforms_id:
+            query += "AND g.platform_id IN (%s)\n"
+        if categories_id:
+            query += "AND g.id in (select gc.game_id from games_categories gc where gc.game_id = g.id and gc.category_id in (%s))\n"
         
-        params = ('%' + name + '%',platforms,categories)
-        cursor.execute(query, params)
-        
-
+        query += "ORDER BY {c} {r}\n".format(c=order_by,r=order_rule)       
+        query += "LIMIT {lim} OFFSET {off}\n".format(lim=limit,off=offset)      
+        params = []
+        #create proper params
+        if name:
+            params.append('%' + name + '%')
+        else:
+            params.append("%%")
+        if platforms_id:
+            platforms = ', '.join('{0}'.format(p) for p in platforms_id)  
+            params.append(platforms)
+        if categories_id:
+            categories = ', '.join('{0}'.format(c) for c in categories_id)
+            params.append(categories)         
+                  
+        params = tuple(params)       
+        cursor.execute(query, params)     
         gameData = cursor.fetchall()
-
-
 
         games = []
         for row in gameData:          

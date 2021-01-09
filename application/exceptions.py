@@ -14,7 +14,7 @@ errors = {
         'status': 500,
     },
     'BadRequestError': {
-        'message' : 'Bad request erorr',
+        'message' : 'Bad request error',
         'status' : 400
     },
     'UnauthorizedError': {
