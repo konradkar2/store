@@ -31,7 +31,7 @@ class CategoryModel:
     @classmethod
     def find_by_name(cls,cursor,name: str) -> CategoryModel:                 
         query = "SELECT * FROM categories WHERE name = %s"
-        params = (_id,)
+        params = (name,)
         cursor.execute(query, params)
         categoryData = cursor.fetchone()
 
@@ -58,4 +58,5 @@ class CategoryModel:
         query = "INSERT INTO categories (name) VALUES (%s)"
         params = (self.name,)
         cursor.execute(query, params)
-        self.id = cursor.lastrowid
+        self.id = cursor.lastrowid    
+
