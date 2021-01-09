@@ -114,8 +114,8 @@ class FetchGame(Resource):
                 game = GameModel.find_by_id(cursor,game_id)    
                 if game is None:
                     return {"message" : "Game of id {_id} not found.".format(_id=game_id)}, 404
-                
-                return { "game" : game.json() }
+                game_json = game.json(cursor)
+                return { "game" : game_json}
         except Exception as e:
             raise InternalServerError(e)
         
