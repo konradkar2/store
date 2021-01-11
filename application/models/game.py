@@ -30,7 +30,7 @@ class GameModel():
             "id": self.id,
             "name": self.name,
             "price": float(self.price),
-            "quantity": self.quantity,
+            "quantity": self.get_quantity(cursor),
             "is_digital" : self.is_digital,
             "age_category": self.age_category,
             "platform" : platform.json(),
