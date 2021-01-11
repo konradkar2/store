@@ -6,6 +6,7 @@ from datetime import datetime
 from store.application.models.game import GameModel
 from store.application.models.game_category import GameCategoryModel
 from store.application.models.category import CategoryModel
+from store.application.models.platform import PlatformModel
 from store.application.models.key import KeyModel
 from store.application.resources.authorize import require_admin
 from store.application.exceptions import InternalServerError, BadRequestError
@@ -54,17 +55,23 @@ class AddGame(Resource):
             now = datetime.utcnow()
             data['release_date'] = now.strftime('%Y-%m-%d %H:%M:%S')
             categories = data.pop('categories')
-            game = GameModel(**data)
             with dbCursor() as cursor:
+                for category_id in categories:
+                    category = CategoryModel.find_by_id(cursor,category_id)
+                    if category is None:                        
+                        return {'message': 'Category with id {id} not found'.format(id=category_id)}, 404
+               
+                platform_id = data['platform_id']
+                platform = PlatformModel.find_by_id(cursor,platform_id)
+                if platform is None:
+                    return {'message': 'Platform with id {id} not found'.format(id=platform_id)}, 404
+
+                game = GameModel(**data)            
                 game.save_to_db(cursor)
-                #create categories for the game.id
-                if game.id:
-                    for category_id in categories:
-                        category = CategoryModel.find_by_id(cursor,category_id)
-                        if category is None:
-                            return {'message': 'Category with id {category_id} not found'.format(category_id=category_id)}, 400
-                        game_category = GameCategoryModel(game.id,category_id)
-                        game_category.save_to_db(cursor)
+                #create categories for the game.id                
+                for category_id in categories:                                      
+                    game_category = GameCategoryModel(game.id,category_id)
+                    game_category.save_to_db(cursor)
         except mysql.connector.Error as e:
             raise InternalServerError(e)
         except ValueError as e:
