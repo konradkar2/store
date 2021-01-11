@@ -122,13 +122,13 @@ class AddCategory(Resource):
 
     @jwt_required
     @require_admin
-    def post(cls,name):
+    def put(cls,name):
         try:
            
             with dbCursor() as cursor:
                 category = CategoryModel.find_by_name(cursor,name)
                 if category:
-                    return {'message': "Error when appending a category {n}, already in database".format(n=name)}, 400
+                    return {'message': "Error when appending a category {n}, already in database".format(n=name)}, 409
                 else:                
                     category = CategoryModel(name)
                     category.save_to_db(cursor)
