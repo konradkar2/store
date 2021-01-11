@@ -21,6 +21,21 @@ class UserModel():
             "email" : self.email,
             "role" : self.role            
         }
+
+    @classmethod
+    def find_by_id(cls,cursor,_id: int) -> UserModel:                
+        query = "SELECT * FROM users WHERE id = %s"
+        params = (_id,)
+        cursor.execute(query, params)
+        userData = cursor.fetchone()
+    
+        user = None
+        if(userData):
+            _id,username,email,role,_hash,salt = userData
+            user = UserModel(username,email,role,_hash,salt,_id)       
+            
+        return user
+
     @classmethod
     def find_by_username(cls,cursor,username: str) -> UserModel:                
         query = "SELECT * FROM users WHERE name = %s"
@@ -53,6 +68,14 @@ class UserModel():
         params = (self.username,self.email,self.role,self.password_hash,self.salt)
         cursor.execute(query, params)
         self.id = cursor.lastrowid
+    
+    def update(self,cursor):
+        query = "UPDATE users\n"
+        query += "SET email=%s, password_hash=%s, salt=%s"
+        query += "WHERE id=%s"
+        params = (self.email,self.password_hash,self.salt,self.id)
+        cursor.execute(query,params)
+        
         
         
 

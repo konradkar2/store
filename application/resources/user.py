@@ -1,6 +1,6 @@
 from flask_restful import Resource, reqparse
 import mysql.connector
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_access_token,jwt_required,get_jwt_identity
 
 from store.application.exceptions import InternalServerError
 from store.application.models.user import UserModel
@@ -72,3 +72,35 @@ class UserLogin(Resource):
             raise InternalServerError(e)
         except Exception as e:
             raise InternalServerError(e)
+
+class ChangePassword(Resource):    
+    parser = reqparse.RequestParser()
+    parser.add_argument(
+        "oldpass", type=str, required=True, help="This field cannot be left blank!"
+    )
+    parser.add_argument(
+        "newpass", type=str, required=True, help="This field cannot be left blank!"
+    )
+    @classmethod
+    @jwt_required
+    def put(cls):
+        data = cls.parser.parse_args()
+        try:
+            with dbCursor() as cursor:
+                user_id = get_jwt_identity()
+                user = UserModel.find_by_id(cursor,user_id)                
+                result = verifyHash_base64(data['oldpass'],user.password_hash,user.salt)                       
+                if not result:
+                    return {"message": "Error when changing password, invalid credientials"}, 401
+                    
+                if result:
+                    password_hash, salt = encrypt_base64(data['newpass'])
+                    user.password_hash = password_hash
+                    user.salt = salt
+
+                    user.update(cursor)
+                return {"message": "Password changed succesfully"}, 200
+        except Exception as e:
+            raise InternalServerError(e)
+
+

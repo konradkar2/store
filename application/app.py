@@ -8,7 +8,7 @@ import sys
 
 
 from store.application.exceptions import errors
-from store.application.resources.user import UserRegister, UserLogin
+from store.application.resources.user import UserRegister, UserLogin, ChangePassword
 from store.application.resources.game_admin import AddGame, AddKey, AddCategory
 from store.application.resources.game_public import AdvancedSearchGame,BuyGames,FetchCategories,FetchGame,FetchPlatforms
 from store.application.resources.jwt import set_jwt_settings
@@ -56,6 +56,7 @@ class HelloWorld(Resource):
 api.add_resource(HelloWorld, '/')
 api.add_resource(UserRegister,'/register')
 api.add_resource(UserLogin,'/auth')
+api.add_resource(ChangePassword,'/chpass')
 
 api.add_resource(AddGame,'/addgame')
 api.add_resource(AdvancedSearchGame,'/games')
