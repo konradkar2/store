@@ -90,7 +90,8 @@ class AddKey(Resource):
     parser.add_argument(
         "key", type=str,  required=True, help="This field cannot be left blank!"     
     )
-    
+
+    @classmethod
     @jwt_required
     @require_admin
     def post(cls):
@@ -119,7 +120,8 @@ class AddKey(Resource):
 
         
 class AddCategory(Resource):   
-
+    
+    @classmethod
     @jwt_required
     @require_admin
     def put(cls,name):
