@@ -24,9 +24,9 @@ class UserRegister(Resource):
         try: 
             with dbCursor() as cursor:
                 if UserModel.find_by_username(cursor, data["username"]):
-                    return {"message": "User already exists"}, 400
+                    return {"message": "User already exists"}, 409
                 if UserModel.find_by_email(cursor, data["email"]):
-                    return {"message": "This email is already taken"}, 400
+                    return {"message": "This email is already taken"}, 409
                 
                 password_hash, salt = encrypt_base64(data['password'])            
                 role = 'user'
@@ -64,8 +64,7 @@ class UserLogin(Resource):
                 access_token = create_access_token(identity=user.id,user_claims=claims,fresh=True,expires_delta=False)
                 #refresh_token = create_refresh_token(user.id)
                 return {
-                    'access_token': access_token,
-                    'role' : user.role,
+                    'access_token': access_token,                    
                     'user': user.json()
                 },200
             return {'message' : "Invalid credentials"}, 401   

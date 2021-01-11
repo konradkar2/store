@@ -2,6 +2,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import List
 from store.application.models.game_category import GameCategoryModel
+from store.application.models.platform import PlatformModel
 from store.application.models.key import KeyModel
 #todo:verify email 
 #change "name" to "username" in database
@@ -22,7 +23,9 @@ class GameModel():
         
         self.id = _id
         
-    def json(self,cursor):       
+    def json(self,cursor):   
+        platform = PlatformModel.find_by_id(cursor,self.platform_id) 
+        print(platform)
         return {
             "id": self.id,
             "name": self.name,
@@ -30,6 +33,7 @@ class GameModel():
             "quantity": self.quantity,
             "is_digital" : self.is_digital,
             "age_category": self.age_category,
+            "platform" : platform.json(),
             "categories" : [category.json(cursor) for category in GameCategoryModel.find_many_by_game_id(cursor,self.id)]     
         }
     
@@ -48,7 +52,7 @@ class GameModel():
 
         game = None
         if(gameData):
-            _id,name,price,quantity,description,release_date,is_digital,platform_id,age_category = gameData
+            _id,name,price,quantity,description,release_date,is_digital,age_category,platform_id = gameData
             game = GameModel(name,price,quantity,description,release_date,is_digital,platform_id,age_category,_id)       
             
         return game

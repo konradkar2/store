@@ -18,7 +18,8 @@ class UserModel():
         return {
             "username": self.username,
             "id": self.id,
-            "email" : self.email,            
+            "email" : self.email,
+            "role" : self.role            
         }
     @classmethod
     def find_by_username(cls,cursor,username: str) -> UserModel:                

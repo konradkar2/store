@@ -18,6 +18,7 @@ class PlatformModel:
         query = "SELECT * FROM platforms WHERE id = %s"
         params = (_id,)
         cursor.execute(query, params)
+        print(cursor.statement)
         platformData = cursor.fetchone()
 
         platform = None
