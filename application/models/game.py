@@ -29,6 +29,7 @@ class GameModel():
         return {
             "id": self.id,
             "name": self.name,
+            "description": self.description,
             "price": float(self.price),
             "quantity": self.get_quantity(cursor),
             "is_digital" : self.is_digital,

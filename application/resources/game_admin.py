@@ -104,10 +104,10 @@ class AddKey(Resource):
                 if game is None:
                     return {'message' : "Error when appending a key, game id not found"}, 404
                 if game.is_digital == False:
-                    return {'message' : "Error when appending a key, game of id {game_id} is not digital".format(game_id=game_id)}, 404
+                    return {'message' : "Error when appending a key, game of id {game_id} is not digital".format(game_id=game_id)}, 400
                 key = KeyModel.find_by_key(cursor,game_id,key_str)
                 if key:
-                    return {'message' : "Error when appending a key, already in database", "key" : key.json()}, 401   
+                    return {'message' : "Error when appending a key, already in database", "key" : key.json()}, 409  
 
                 key = KeyModel(game_id,key_str)                  
                 key.save_to_db(cursor)
