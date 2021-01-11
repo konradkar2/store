@@ -100,7 +100,7 @@ class GameModel():
 
         games = []
         for row in gameData:          
-            _id,name,price,quantity,description,release_date,is_digital,platform_id,age_category = row
+            _id,name,price,quantity,description,release_date,is_digital,age_category,platform_id = row
             game = GameModel(name,price,quantity,description,release_date,is_digital,platform_id,age_category,_id)  
             games.append(game)
 
