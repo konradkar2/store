@@ -58,5 +58,11 @@ class CategoryModel:
         query = "INSERT INTO categories (name) VALUES (%s)"
         params = (self.name,)
         cursor.execute(query, params)
-        self.id = cursor.lastrowid    
+        self.id = cursor.lastrowid
+
+    def delete_from_db(self, cursor):
+        query = "DELETE FROM categories WHERE (name) = (%s)"
+        params = (self.name,)
+        cursor.execute(query, params)
+
 

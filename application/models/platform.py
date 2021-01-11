@@ -29,7 +29,7 @@ class PlatformModel:
     @classmethod
     def find_by_name(cls,cursor,name: str) -> PlatformModel:                     
         query = "SELECT * FROM platforms WHERE name = %s"
-        params = (_id,)
+        params = (name,)
         cursor.execute(query, params)
         platformData = cursor.fetchone()
 
@@ -57,3 +57,8 @@ class PlatformModel:
         params = (self.name,)
         cursor.execute(query, params)
         self.id = cursor.lastrowid
+
+    def delete_from_db(self, cursor):
+        query = "DELETE FROM platforms WHERE (name) = (%s)"
+        params = (self.name,)
+        cursor.execute(query, params)

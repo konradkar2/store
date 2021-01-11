@@ -135,9 +135,72 @@ class AddCategory(Resource):
                     category = CategoryModel(name)
                     category.save_to_db(cursor)
                 
-                return {'message': 'Category added sucessfully.'}, 201            
+                return {'message': 'Category added sucessfully.'}, 201
                 
         except Exception as e:
             raise InternalServerError(e)
 
+class DeleteCategory(Resource):
+
+    @classmethod
+    @jwt_required
+    @require_admin
+    def delete(cls, name):
+        try:
+
+            with dbCursor() as cursor:
+                category = CategoryModel.find_by_name(cursor, name)
+                if category:
+                    category = CategoryModel(name)
+                    category.delete_from_db(cursor)
+                else:
+                    return {'message': "Error when deleting a category {n}, category doesnt exist".format(n=name)}, 409
+
+                return {'message': 'Category deleted sucessfully.'}, 201
+
+        except Exception as e:
+            raise InternalServerError(e)
+
+
+class AddPlatform(Resource):
+
+    @classmethod
+    @jwt_required
+    @require_admin
+    def put(cls, name):
+        try:
+
+            with dbCursor() as cursor:
+                platform = PlatformModel.find_by_name(cursor, name)
+                if platform:
+                    return {'message': "Error when appending a platform {n}, already in database".format(n=name)}, 409
+                else:
+                    platform = PlatformModel(name)
+                    platform.save_to_db(cursor)
+
+                return {'message': 'Platform added sucessfully.'}, 201
+
+        except Exception as e:
+            raise InternalServerError(e)
+
+class DeletePlatform(Resource):
+
+    @classmethod
+    @jwt_required
+    @require_admin
+    def delete(cls, name):
+        try:
+
+            with dbCursor() as cursor:
+                platform = PlatformModel.find_by_name(cursor, name)
+                if platform:
+                    platform = PlatformModel(name)
+                    platform.delete_from_db(cursor)
+                else:
+                    return {'message': "Error when deleting a platform {n}, platform doesnt exist".format(n=name)}, 409
+
+                return {'message': 'Category deleted sucessfully.'}, 201
+
+        except Exception as e:
+            raise InternalServerError(e)
 
