@@ -154,7 +154,7 @@ class DeleteCategory(Resource):
                     category = CategoryModel(name)
                     category.delete_from_db(cursor)
                 else:
-                    return {'message': "Error when deleting a category {n}, category doesnt exist".format(n=name)}, 409
+                    return {'message': "Error when deleting a category {n}, category doesnt exist".format(n=name)}, 404
 
                 return {'message': 'Category deleted sucessfully.'}, 201
 
@@ -197,7 +197,7 @@ class DeletePlatform(Resource):
                     platform = PlatformModel(name)
                     platform.delete_from_db(cursor)
                 else:
-                    return {'message': "Error when deleting a platform {n}, platform doesnt exist".format(n=name)}, 409
+                    return {'message': "Error when deleting a platform {n}, platform doesnt exist".format(n=name)}, 404
 
                 return {'message': 'Category deleted sucessfully.'}, 201
 

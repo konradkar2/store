@@ -141,10 +141,10 @@ class BuyGames(Resource):
 
                     game = GameModel.find_by_id(cursor,game_id)
                     if game is None:
-                        return {"message" : "Game of id {game_id} not found.".format(game_id=game_id)}, 400
+                        return {"message" : "Game of id {id} not found.".format(id=game_id)}, 404
                     quantity_in_db = game.get_quantity(cursor)                    
                     if quantity_in_db < quantity:
-                        return {"message" : "Game of id {game_id} is available only in {quantity} pieces.".format(game_id=game_id,quantity=quantity_in_db)}, 400
+                        return {"message" : "Game of id {id} is available only in {qua} pieces.".format(id=game_id,qua=quantity_in_db)}, 404
                 
                 #data is partially verified, now some bad asynch stuff might happen
                 
@@ -158,8 +158,11 @@ class BuyGames(Resource):
                     game_id = entry['game_id']
                     quantity = entry['quantity']
                     
-                    key = KeyModel.find_any_not_used(cursor,game_id)
-                    keyId = key.id
+                    game = GameModel.find_by_id(cursor,game_id)
+                    keyId = None
+                    if game.is_digital:
+                        key = KeyModel.find_any_not_used(cursor,game_id)
+                        keyId = key.id
                     gameTransaction = GameTransactionModel(user_transaction_id,game_id,keyId)
                     gameTransaction.save_to_db(cursor)
                     
