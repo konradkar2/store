@@ -160,11 +160,12 @@ class BuyGames(Resource):
                     
                     game = GameModel.find_by_id(cursor,game_id)
                     keyId = None
-                    if game.is_digital:
-                        key = KeyModel.find_any_not_used(cursor,game_id)
-                        keyId = key.id
-                    gameTransaction = GameTransactionModel(user_transaction_id,game_id,keyId)
-                    gameTransaction.save_to_db(cursor)
+                    for i in range(0,quantity):
+                        if game.is_digital:
+                            key = KeyModel.find_any_not_used(cursor,game_id)
+                            keyId = key.id
+                        gameTransaction = GameTransactionModel(user_transaction_id,game_id,keyId)
+                        gameTransaction.save_to_db(cursor)
                     
                 return {'message': 'Games purchase successful'}, 201
         except Exception as e:

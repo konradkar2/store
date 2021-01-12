@@ -85,7 +85,7 @@ class PutGames(TestCase):
                     continue
                 name = row[0]
                 description = row[1]
-                description = description[0:89]
+                description = description[0:499]
                 price = int(row[2])                
                 categories = row[4]
                 is_digital = int(row[5])
