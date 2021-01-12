@@ -28,7 +28,7 @@ def shopping_cart_validator(value):
 
 def search_filter_validator(value):
     filter_schema = {
-        'page_number' : {'required' : True, 'type': 'integer'},
+        'page_number' : {'required' : True, 'type': 'integer','min': 1},
         'name' : {'required': False, 'type' : 'string'},
         'categories_id' : {'required' : False, 'type' : ['integer','list']},
         'platforms_id' : {'required' : False, 'type' : ['integer','list']},
