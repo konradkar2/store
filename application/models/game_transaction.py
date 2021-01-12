@@ -28,6 +28,7 @@ class GameTransactionModel():
             "user_transaction_id": self.user_transaction_id,
             "game_id" : self.game_id,
             "game_name" : game.name,
+            "price" : str(game.price),
             "key_id" : self.key_id,
             "key": key
         }
