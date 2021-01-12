@@ -82,9 +82,7 @@ class GameModel():
         if platforms_id:
             query += "AND g.platform_id IN (%s)\n" % platforms_format            
         if categories_id:
-            query += "AND g.id in (select gc.game_id from games_categories gc where gc.game_id = g.id and gc.category_id in (%s))\n" % categories_format
-        
-        print(query)
+            query += "AND g.id in (select gc.game_id from games_categories gc where gc.game_id = g.id and gc.category_id in (%s))\n" % categories_format       
         
         query += "ORDER BY {c} {r}\n".format(c=order_by,r=order_rule)       
         query += "LIMIT {lim} OFFSET {off}\n".format(lim=limit,off=offset)      
@@ -102,8 +100,7 @@ class GameModel():
                 params.append(c)          
              
         params = tuple(params)       
-        cursor.execute(query, params)
-        print(cursor.statement)             
+        cursor.execute(query, params)                   
         gameData = cursor.fetchall()
 
         games = []

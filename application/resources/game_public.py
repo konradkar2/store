@@ -32,6 +32,7 @@ def search_filter_validator(value):
         'name' : {'required': False, 'type' : 'string'},
         'categories_id' : {'required' : False, 'type' : ['integer','list']},
         'platforms_id' : {'required' : False, 'type' : ['integer','list']},
+        'digital' : {'required': False, 'type' : 'boolean'},
         'order_by' : {'required' : False, 'type': 'string', 'allowed' : ['price','name']},
         'order_rule' :{'required' : False, 'type': 'string', 'allowed' : ['ASC','DESC']}
     }
