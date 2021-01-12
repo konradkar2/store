@@ -49,5 +49,6 @@ class GameTransactionModel():
         query = "INSERT INTO games_transactions (user_transaction_id,game_id,key_id) VALUES (%s, %s,%s)"
         params = (self.user_transaction_id,self.game_id,self.key_id)
         cursor.execute(query, params)
+        print(cursor.statement)
         self.id = cursor.lastrowid
 

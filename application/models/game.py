@@ -70,15 +70,21 @@ class GameModel():
             order_rule = 'ASC'
         if order_by not in ('price','name') or order_rule not in ('ASC,DESC,asc,desc'):
             raise Exception        
-
+            
+        if platforms_id:
+            platforms_format = ','.join(['%s'] * len(platforms_id))         
+        if categories_id:
+            categories_format = ','.join(['%s'] * len(categories_id))
         #create query
         query = "SELECT SQL_CALC_FOUND_ROWS * FROM games g\n"          
         query += "WHERE g.name LIKE %s\n"
 
         if platforms_id:
-            query += "AND g.platform_id IN (%s)\n"
+            query += "AND g.platform_id IN (%s)\n" % platforms_format            
         if categories_id:
-            query += "AND g.id in (select gc.game_id from games_categories gc where gc.game_id = g.id and gc.category_id in (%s))\n"
+            query += "AND g.id in (select gc.game_id from games_categories gc where gc.game_id = g.id and gc.category_id in (%s))\n" % categories_format
+        
+        print(query)
         
         query += "ORDER BY {c} {r}\n".format(c=order_by,r=order_rule)       
         query += "LIMIT {lim} OFFSET {off}\n".format(lim=limit,off=offset)      
@@ -89,14 +95,18 @@ class GameModel():
         else:
             params.append("%%")
         if platforms_id:
-            platforms = ', '.join('{0}'.format(p) for p in platforms_id)  
-            params.append(platforms)
-        if categories_id:
-            categories = ', '.join('{0}'.format(c) for c in categories_id)
-            params.append(categories)         
+            for p in platforms_id:
+                params.append(p)
+        if categories_id: 
+            for c in categories_id:
+                params.append(c)
+            
+            
+             
                   
         params = tuple(params)       
-        cursor.execute(query, params)     
+        cursor.execute(query, params)
+        print(cursor.statement)             
         gameData = cursor.fetchall()
 
         games = []
