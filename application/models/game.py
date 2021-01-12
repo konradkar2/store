@@ -99,11 +99,8 @@ class GameModel():
                 params.append(p)
         if categories_id: 
             for c in categories_id:
-                params.append(c)
-            
-            
+                params.append(c)          
              
-                  
         params = tuple(params)       
         cursor.execute(query, params)
         print(cursor.statement)             
