@@ -59,7 +59,7 @@ class GameModel():
         return game
     @classmethod
     def find_many_by_filter(cls,cursor,number_per_page,page_number: int,name: str,categories_id: List[str],
-                    platforms_id: List[str],order_by: str,order_rule: str):
+                    platforms_id: List[str],order_by: str,order_rule: str, digital: int):
         
         limit = number_per_page
         offset  = (page_number -1 ) * number_per_page
@@ -79,6 +79,8 @@ class GameModel():
         query = "SELECT SQL_CALC_FOUND_ROWS * FROM games g\n"          
         query += "WHERE g.name LIKE %s\n"
 
+        if digital in(0,1):
+            query += "AND g.is_digital = (%s)\n" 
         if platforms_id:
             query += "AND g.platform_id IN (%s)\n" % platforms_format            
         if categories_id:
@@ -92,6 +94,8 @@ class GameModel():
             params.append('%' + name + '%')
         else:
             params.append("%%")
+        if digital in(0,1):
+            params.append(digital)
         if platforms_id:
             for p in platforms_id:
                 params.append(p)

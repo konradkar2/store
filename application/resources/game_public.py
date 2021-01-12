@@ -32,7 +32,7 @@ def search_filter_validator(value):
         'name' : {'required': False, 'type' : 'string'},
         'categories_id' : {'required' : False, 'type' : ['integer','list']},
         'platforms_id' : {'required' : False, 'type' : ['integer','list']},
-        'digital' : {'required': False, 'type' : 'boolean'},
+        'digital' : {'required': False, 'type' : 'integer', 'allowed' : [-1,0,1]},
         'order_by' : {'required' : False, 'type': 'string', 'allowed' : ['price','name']},
         'order_rule' :{'required' : False, 'type': 'string', 'allowed' : ['ASC','DESC']}
     }
@@ -62,10 +62,10 @@ class AdvancedSearchGame(Resource):
                 platforms_id = data.get('platforms_id')
                 order_by = data.get('order_by')
                 order_rule = data.get('order_rule')
-
-
+                digital = data.get('digital')
                 
-                games = GameModel.find_many_by_filter(cursor,RESULTS_PER_PAGE,page_number,name,categories_id,platforms_id,order_by,order_rule)
+                
+                games = GameModel.find_many_by_filter(cursor,RESULTS_PER_PAGE,page_number,name,categories_id,platforms_id,order_by,order_rule,digital)
                 #get entry count using SQL_CALC_FOUND_ROWS
                 cursor.execute("SELECT FOUND_ROWS()")
                 (entry_count,) = cursor.fetchone()
