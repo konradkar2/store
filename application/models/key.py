@@ -40,6 +40,18 @@ class KeyModel():
             _id,game_id,used,key = keyData
             key = KeyModel(game_id,key,used,_id)
         return key
+    @classmethod
+    def find_by_id(cls,cursor,_id):        
+        query = "SELECT * FROM games_keys WHERE id = %s"
+        params = (_id,)
+        cursor.execute(query, params)
+        keyData = cursor.fetchone()
+        
+        key = None
+        if keyData:
+            _id,game_id,used,key = keyData
+            key = KeyModel(game_id,key,used,_id)
+        return key
 
     @classmethod
     def find_any_not_used(cls,cursor,game_id: int):        

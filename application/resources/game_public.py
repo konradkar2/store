@@ -82,6 +82,31 @@ class AdvancedSearchGame(Resource):
                
         except Exception as e:
             raise InternalServerError(e)
+class FetchMyShoppings(Resource):
+    
+    @classmethod
+    @jwt_required    
+    def get(cls):
+        try:
+            with dbCursor() as cursor:
+                user_id = get_jwt_identity()
+                user_transactions = UserTransactionModel.find_by_user_id(cursor,user_id)
+                print(user_transactions)
+                results = []
+                for user_tr in user_transactions:
+                    res = []                    
+                    game_transactions = GameTransactionModel.find_by_user_transaction_id(cursor,user_tr.id)
+                    for game_tr in game_transactions:
+                        res.append(game_tr.json_adv(cursor))
+                    result = user_tr.json()
+                    result['games_transactions'] = res
+                    
+                    results.append(result)
+
+                return {"transactions": results}
+
+        except Exception as e:
+            raise InternalServerError(e)
         
 
 class FetchCategories(Resource):

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from store.application.models.game import GameModel
+from store.application.models.key import KeyModel
 
 
 class GameTransactionModel():
@@ -15,6 +17,19 @@ class GameTransactionModel():
             "user_transaction_id": self.user_transaction_id,
             "game_id" : self.game_id,
             "key_id" : self.key_id
+        }
+    def json_adv(self,cursor):
+        game = GameModel.find_by_id(cursor,self.game_id)
+        key = None
+        if game.is_digital:
+            key = KeyModel.find_by_id(cursor,self.key_id).key
+        return {
+            "id" : self.id,
+            "user_transaction_id": self.user_transaction_id,
+            "game_id" : self.game_id,
+            "game_name" : game.name,
+            "key_id" : self.key_id,
+            "key": key
         }
 
     @classmethod
@@ -33,7 +48,7 @@ class GameTransactionModel():
     @classmethod
     def find_by_user_transaction_id(cls,cursor,user_transaction_id: int):       
         query = "SELECT * FROM games_transactions WHERE user_transaction_id = %s"
-        params = (user_transaction_id_id,)
+        params = (user_transaction_id,)
         cursor.execute(query, params)
         gameTransactionsData = cursor.fetchall()
         

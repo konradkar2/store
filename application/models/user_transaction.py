@@ -13,7 +13,7 @@ class UserTransactionModel():
         return {
             "id": self.id,
             "user_id": self.user_id,
-            "date" : self.date,            
+            "date" : self.date.strftime('%Y-%m-%d %H:%M:%S'),            
         }
 
     @classmethod
@@ -39,7 +39,7 @@ class UserTransactionModel():
         transactions = []
         for tData in transactionsData:
             _id,user_id,date = tData
-            tr = TransactionModel(user_id,date,_id)
+            tr = cls(user_id,date,_id)
             transactions.append(tr)
         
         return transactions

@@ -10,7 +10,7 @@ import sys
 from store.application.exceptions import errors
 from store.application.resources.user import UserRegister, UserLogin, ChangePassword
 from store.application.resources.game_admin import AddGame, AddKey, AddCategory, DeleteCategory, AddPlatform, DeletePlatform
-from store.application.resources.game_public import AdvancedSearchGame,BuyGames,FetchCategories,FetchGame,FetchPlatforms
+from store.application.resources.game_public import AdvancedSearchGame,BuyGames,FetchCategories,FetchGame,FetchPlatforms,FetchMyShoppings
 from store.application.resources.jwt import set_jwt_settings
 
 
@@ -69,7 +69,7 @@ api.add_resource(AddCategory, '/addcategory/<string:name>')
 api.add_resource(DeleteCategory, '/deletecategory/<string:name>')
 api.add_resource(AddPlatform, '/addplatform/<string:name>')
 api.add_resource(DeletePlatform, '/deleteplatform/<string:name>')
-
+api.add_resource(FetchMyShoppings,'/myshoppings')
 
 if __name__ == '__main__':
     app.run(debug=True)
