@@ -12,7 +12,9 @@ from store.application.resources.authorize import require_admin
 from store.application.exceptions import InternalServerError, BadRequestError
 from store.application.models.category import CategoryModel
 from store.application.utils.db import dbCursor
-
+from store.application.models.game_transaction import GameTransactionModel
+from store.application.models.user_transaction import UserTransactionModel
+from store.application.models.user import UserModel
 
 class AddGame(Resource):
     parser = reqparse.RequestParser()
@@ -204,3 +206,30 @@ class DeletePlatform(Resource):
         except Exception as e:
             raise InternalServerError(e)
 
+
+class FetchAllShoppings(Resource):
+
+    @classmethod
+    @jwt_required
+    @require_admin
+    def get(cls):
+        try:
+            with dbCursor() as cursor:
+                all_user_transactions = UserTransactionModel.find_all(cursor)
+                results = []
+                for user_tr in all_user_transactions:
+                    user = UserModel.find_by_id(cursor, user_tr.user_id).json()
+                    res = []
+                    game_transactions = GameTransactionModel.find_by_user_transaction_id(cursor, user_tr.id)
+                    for game_tr in game_transactions:
+                        res.append(game_tr.json_adv(cursor))
+                    result = user_tr.json()
+                    result['username'] = user['username']
+                    result['games_transactions'] = res
+
+                    results.append(result)
+
+                return {"transactions": results}
+
+        except Exception as e:
+            raise InternalServerError(e)

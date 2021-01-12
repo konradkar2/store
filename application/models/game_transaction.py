@@ -60,6 +60,7 @@ class GameTransactionModel():
             gameTransactions.append(gtr)
         
         return gameTransactions
+
     
     def save_to_db(self,cursor):        
         query = "INSERT INTO games_transactions (user_transaction_id,game_id,key_id) VALUES (%s, %s,%s)"
