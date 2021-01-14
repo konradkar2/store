@@ -75,6 +75,7 @@ class UserModel():
         query += "WHERE id=%s"
         params = (self.email,self.password_hash,self.salt,self.id)
         cursor.execute(query,params)
+
         
         
         

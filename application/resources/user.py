@@ -103,4 +103,27 @@ class ChangePassword(Resource):
         except Exception as e:
             raise InternalServerError(e)
 
+class ChangeEmail(Resource):
+    parser = reqparse.RequestParser()
+    parser.add_argument(
+        "newemail", type=str, required=True, help="This field cannot be left blank!"
+    )
+
+    @classmethod
+    @jwt_required
+    def put(cls):
+        data = cls.parser.parse_args()
+        try:
+            with dbCursor() as cursor:
+                new_email = data['newemail']
+                user_id = get_jwt_identity()
+                user = UserModel.find_by_id(cursor, user_id)
+
+                if user:
+                    user.email = new_email
+                    user.update(cursor)
+                return {"message": "Email changed succesfully"}, 200
+        except Exception as e:
+            raise InternalServerError(e)
+
 
