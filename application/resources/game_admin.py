@@ -233,3 +233,19 @@ class FetchAllShoppings(Resource):
 
         except Exception as e:
             raise InternalServerError(e)
+
+class FetchAllUsers(Resource):
+
+    @classmethod
+    @jwt_required
+    @require_admin
+    def get(cls):
+        try:
+            with dbCursor() as cursor:
+                all_users = UserModel.find_all(cursor)
+                return {
+                    'users' : [user.json() for user in all_users]
+                }
+
+        except Exception as e:
+            raise InternalServerError(e)

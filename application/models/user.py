@@ -49,6 +49,7 @@ class UserModel():
             user = UserModel(username,email,role,_hash,salt,_id)       
             
         return user
+
     @classmethod
     def find_by_email(cls,cursor,email: str) -> UserModel:       
         query = "SELECT * FROM users WHERE email = %s"
@@ -63,6 +64,20 @@ class UserModel():
             
         return user
 
+    @classmethod
+    def find_all(cls, cursor):
+        query = "SELECT * FROM users"
+        cursor.execute(query)
+        userData = cursor.fetchall()
+
+        users = [];
+        for row in userData:
+            _id, username, email, role, _hash, salt = row
+            user = UserModel(username, email, role, _hash, salt, _id)
+            users.append(user)
+
+        return users
+
     def save_to_db(self,cursor):              
         query = "INSERT INTO users (name, email,role, password_hash, salt) VALUES (%s, %s,%s,%s,%s)"
         params = (self.username,self.email,self.role,self.password_hash,self.salt)
@@ -71,9 +86,9 @@ class UserModel():
     
     def update(self,cursor):
         query = "UPDATE users\n"
-        query += "SET email=%s, password_hash=%s, salt=%s"
+        query += "SET email=%s, password_hash=%s, salt=%s, role=%s"
         query += "WHERE id=%s"
-        params = (self.email,self.password_hash,self.salt,self.id)
+        params = (self.email,self.password_hash,self.salt,self.role,self.id)
         cursor.execute(query,params)
 
         
