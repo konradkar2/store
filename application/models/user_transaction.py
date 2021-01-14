@@ -43,6 +43,20 @@ class UserTransactionModel():
             transactions.append(tr)
         
         return transactions
+
+    @classmethod
+    def find_all(cls, cursor):
+        query = "SELECT * FROM users_transactions"
+        cursor.execute(query)
+        transactionsData = cursor.fetchall()
+
+        transactions = []
+        for tData in transactionsData:
+            _id, user_id, date = tData
+            tr = cls(user_id, date, _id)
+            transactions.append(tr)
+
+        return transactions
     
     def save_to_db(self,cursor):          
         query = "INSERT INTO users_transactions (user_id,date) VALUES (%s, %s)"
