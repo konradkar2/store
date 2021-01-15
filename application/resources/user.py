@@ -90,7 +90,9 @@ class UserLogin(Resource):
             with dbCursor() as cursor:
                 user = UserModel.find_by_username(cursor,data['username'])
                 if user is None:
-                    return {'message' : "Invalid credentials"}, 401   
+                    return {'message' : "Invalid credentials"}, 401
+                elif user.role == "banned":
+                    return {'message' : "You are banned"}, 401
             
             result = verifyHash_base64(data['password'],user.password_hash,user.salt)                       
 
@@ -161,32 +163,6 @@ class ChangeEmail(Resource):
         except Exception as e:
             raise InternalServerError(e)
 
-class ChangeRole(Resource):
-    parser = reqparse.RequestParser()
-    parser.add_argument(
-        "newrole", type=str, required=True, help="This field cannot be left blank!"
-    )
-    parser.add_argument(
-        "user_id", type=int, required=True, help="This field cannot be left blank!"
-    )
-
-    @classmethod
-    @jwt_required
-    @require_admin
-    def put(cls):
-        data = cls.parser.parse_args()
-        try:
-            with dbCursor() as cursor:
-                new_role = data['newrole']
-                user_id = data['user_id']
-                user = UserModel.find_by_id(cursor, user_id)
-
-                if user:
-                    user.role = new_role
-                    user.update(cursor)
-                return {"message": "Role changed succesfully"}, 200
-        except Exception as e:
-            raise InternalServerError(e)
 
 class ChangeUsersCredentials(Resource):
     parser = reqparse.RequestParser()
@@ -234,6 +210,29 @@ class ChangeUsersCredentials(Resource):
                         user.role = new_role
                     user.update(cursor)
                     return {"message": "Password changed succesfully"}, 200
+                else:
+                    return {"message": "User doesnt exist"}, 401
+        except Exception as e:
+            raise InternalServerError(e)
+
+class BanUser(Resource):
+    parser = reqparse.RequestParser()
+    parser.add_argument(
+        "user_id", type=int, required=True, help="This field cannot be left blank!"
+    )
+
+    @classmethod
+    @jwt_required
+    @require_admin
+    def put(cls):
+        data = cls.parser.parse_args()
+        try:
+            with dbCursor() as cursor:
+                user = UserModel.find_by_id(cursor, data['user_id']);
+                if user:
+                    user.role = "banned"
+                    user.update(cursor)
+                    return {"message": "User banned succesfully"}, 200
                 else:
                     return {"message": "User doesnt exist"}, 401
         except Exception as e:
