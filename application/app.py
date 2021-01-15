@@ -8,7 +8,7 @@ import sys
 
 
 from store.application.exceptions import errors
-from store.application.resources.user import UserRegister, UserLogin, ChangePassword, ChangeEmail, AdminRegister, ChangeRole
+from store.application.resources.user import UserRegister, UserLogin, ChangePassword, ChangeEmail, AdminRegister, ChangeRole, ChangeUsersCredentials
 from store.application.resources.game_admin import AddGame, AddKey, AddCategory, DeleteCategory, AddPlatform, DeletePlatform, FetchAllShoppings, FetchAllUsers
 from store.application.resources.game_public import AdvancedSearchGame,BuyGames,FetchCategories,FetchGame,FetchPlatforms,FetchMyShoppings
 from store.application.resources.jwt import set_jwt_settings
@@ -60,6 +60,7 @@ api.add_resource(ChangePassword,'/chpass')
 api.add_resource(ChangeEmail, '/chemail')
 api.add_resource(AdminRegister, '/registeradmin')
 api.add_resource(ChangeRole, '/changerole')
+api.add_resource(ChangeUsersCredentials, '/edituser')
 
 api.add_resource(AddGame,'/addgame')
 api.add_resource(AdvancedSearchGame,'/games')

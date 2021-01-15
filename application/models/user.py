@@ -86,9 +86,9 @@ class UserModel():
     
     def update(self,cursor):
         query = "UPDATE users\n"
-        query += "SET email=%s, password_hash=%s, salt=%s, role=%s"
+        query += "SET name=%s, email=%s, password_hash=%s, salt=%s, role=%s"
         query += "WHERE id=%s"
-        params = (self.email,self.password_hash,self.salt,self.role,self.id)
+        params = (self.username, self.email,self.password_hash,self.salt,self.role,self.id)
         cursor.execute(query,params)
 
         

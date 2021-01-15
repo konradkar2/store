@@ -188,3 +188,53 @@ class ChangeRole(Resource):
         except Exception as e:
             raise InternalServerError(e)
 
+class ChangeUsersCredentials(Resource):
+    parser = reqparse.RequestParser()
+    parser.add_argument(
+        "user_id", type=int, required=True, help="This field cannot be left blank!"
+    )
+    parser.add_argument(
+        "newusername", type=str, required=False, help="This field cannot be left blank!"
+    )
+    parser.add_argument(
+        "newpass", type=str, required=False, help="This field cannot be left blank!"
+    )
+    parser.add_argument(
+        "newemail", type=str, required=False, help="This field cannot be left blank!"
+    )
+    parser.add_argument(
+        "newrole", type=str, required=False, help="This field cannot be left blank!"
+    )
+
+    @classmethod
+    @jwt_required
+    @require_admin
+    def put(cls):
+        data = cls.parser.parse_args()
+        user_id = data['user_id']
+        new_username = data['newusername']
+        new_pass = data['newpass']
+        new_email = data['newemail']
+        new_role = data['newrole']
+        try:
+            with dbCursor() as cursor:
+                user = UserModel.find_by_id(cursor, user_id);
+                if user:
+                    if new_username:
+                        user.username = new_username
+                    if new_username:
+                        password_hash, salt = encrypt_base64(new_pass)
+                        user.password_hash = password_hash
+                        user.salt = salt
+                    if new_role:
+                        user.role = new_role
+                    if new_email:
+                        user.email = new_email
+                    if new_role:
+                        user.role = new_role
+                    user.update(cursor)
+                    return {"message": "Password changed succesfully"}, 200
+                else:
+                    return {"message": "User doesnt exist"}, 401
+        except Exception as e:
+            raise InternalServerError(e)
