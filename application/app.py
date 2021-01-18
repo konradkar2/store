@@ -10,7 +10,7 @@ import sys
 from store.application.exceptions import errors
 from store.application.resources.user import UserRegister, UserLogin, ChangePassword, ChangeEmail, AdminRegister, ChangeUsersCredentials, BanUser
 from store.application.resources.game_admin import AddGame, AddKey, AddCategory, DeleteCategory, AddPlatform, DeletePlatform, FetchAllShoppings, FetchAllUsers, FetchGameKeys
-from store.application.resources.game_public import AdvancedSearchGame,BuyGames,FetchCategories,FetchGame,FetchPlatforms,FetchMyShoppings
+from store.application.resources.game_public import AdvancedSearchGame,BuyGames,FetchCategories,FetchGame,FetchPlatforms,FetchMyShoppings, FetchAgeCategories
 from store.application.resources.jwt import set_jwt_settings
 
 
@@ -77,6 +77,7 @@ api.add_resource(DeletePlatform, '/deleteplatform/<string:name>')
 api.add_resource(FetchMyShoppings,'/myshoppings')
 api.add_resource(FetchAllShoppings, '/transhistory')
 api.add_resource(FetchAllUsers, '/allusers')
+api.add_resource(FetchAgeCategories, '/agecategories')
 
 if __name__ == '__main__':
     app.run(debug=True)
