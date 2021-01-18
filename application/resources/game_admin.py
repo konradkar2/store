@@ -249,3 +249,28 @@ class FetchAllUsers(Resource):
 
         except Exception as e:
             raise InternalServerError(e)
+
+class FetchGameKeys(Resource):
+    parser = reqparse.RequestParser()
+    parser.add_argument(
+        "game_id", type=int, required=True, help="This field cannot be left blank!"
+    )
+    @classmethod
+    @jwt_required
+    @require_admin
+    def get(cls):
+        data = cls.parser.parse_args()
+        game_id = data['game_id']
+        try:
+            with dbCursor() as cursor:
+                game = GameModel.find_by_id(cursor,game_id)
+                if game:
+                    keys = KeyModel.find_all_by_game_id(cursor, game_id)
+                    return {
+                        'keys' : [key.json() for key in keys]
+                    }
+                else:
+                    return {'message': "Error, incorrect game id"}, 404
+
+        except Exception as e:
+            raise InternalServerError(e)

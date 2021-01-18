@@ -198,7 +198,7 @@ class ChangeUsersCredentials(Resource):
                 if user:
                     if new_username:
                         user.username = new_username
-                    if new_username:
+                    if new_pass:
                         password_hash, salt = encrypt_base64(new_pass)
                         user.password_hash = password_hash
                         user.salt = salt
