@@ -151,8 +151,8 @@ class EditGame(Resource):
                         game.description = new_descr
                     if new_rel_date:
                         game.release_date = new_rel_date
-                    if new_is_digital:
-                        if KeyModel.find_all_by_game_id(cursor, game_id) is not None:
+                    if new_is_digital is not None:
+                        if KeyModel.find_all_by_game_id(cursor, game_id):
                             return {'message': 'Cant change to box, keys for the game exists'}, 404
                         else:
                             game.is_digital = new_is_digital
