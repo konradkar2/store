@@ -54,6 +54,20 @@ class KeyModel():
         return key
 
     @classmethod
+    def find_all_by_game_id(cls, cursor, _id):
+        query = "SELECT * FROM games_keys WHERE game_id = %s"
+        params = (_id,)
+        cursor.execute(query, params)
+        keysData = cursor.fetchall()
+
+        keys = []
+        for row in keysData:
+            _id, game_id, used, key = row
+            key = KeyModel(game_id, key, used, _id)
+            keys.append(key)
+        return keys
+
+    @classmethod
     def find_any_not_used(cls,cursor,game_id: int):        
         query = "SELECT * FROM games_keys WHERE game_id = %s AND used = 0"
         params = (game_id,)

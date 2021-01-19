@@ -83,6 +83,106 @@ class AddGame(Resource):
 
         return {'message': 'Game added successfully.'}, 201
 
+class EditGame(Resource):
+    parser = reqparse.RequestParser()
+    parser.add_argument(
+        "name", type=str, required=False, help="This field cannot be left blank!"
+    )
+    parser.add_argument(
+        "price", type=float, required=False, help="This field cannot be left blank!"
+    )
+    parser.add_argument(
+        "quantity", type=str, required=False, help="This field cannot be left blank!"
+    )
+    parser.add_argument(
+        "description", type=str, required=False, help="This field cannot be left blank!"
+    )
+    parser.add_argument(
+        "release_date", type=str, required=False, help="This field cannot be left blank!"
+    )
+    parser.add_argument(
+        "is_digital", type=lambda x: x if (int(x) == 0 or int(x) == 1) else False, required=False,
+        help="This field cannot be left blank!"
+    )
+    parser.add_argument(
+        "platform_id", type=int, required=False, help="This field cannot be left blank!"
+    )
+    parser.add_argument(
+        "age_category", type=str, required=False, help="This field cannot be left blank!"
+    )
+    parser.add_argument(
+        "categories", action='append', required=False, help="This field cannot be left blank!"
+    )
+    parser.add_argument(
+        "game_id", type=int, required=True, help="This field cannot be left blank!"
+    )
+
+    @classmethod
+    @jwt_required
+    @require_admin
+    def post(cls):
+        data = cls.parser.parse_args()
+        new_name = data["name"]
+        new_price = data["price"]
+        new_quantity = data["quantity"]
+        new_descr = data["description"]
+        new_rel_date = data["release_date"]
+        new_is_digital = data["is_digital"]
+        new_platform = data["platform_id"]
+        new_age = data["age_category"]
+        new_categories = data["categories"]
+        game_id = data["game_id"]
+        try:
+            # create and and save GameModel
+            now = datetime.utcnow()
+            new_rel_date = now.strftime('%Y-%m-%d %H:%M:%S')
+            with dbCursor() as cursor:
+                game = GameModel.find_by_id(cursor, game_id)
+                if game:
+                    if new_name:
+                        game.name = new_name
+                    if new_price:
+                        game.price = new_price
+                    if new_quantity:
+                        game.quantity = new_quantity
+                    if new_descr:
+                        game.description = new_descr
+                    if new_descr:
+                        game.description = new_descr
+                    if new_rel_date:
+                        game.release_date = new_rel_date
+                    if new_is_digital is not None:
+                        if KeyModel.find_all_by_game_id(cursor, game_id):
+                            return {'message': 'Cant change to box, keys for the game exists'}, 404
+                        else:
+                            game.is_digital = new_is_digital
+                    if new_platform:
+                        if PlatformModel.find_by_id(cursor, new_platform) is not None:
+                            game.platform_id = new_platform
+                        else:
+                            return {'message': 'Platform doesnt exist'}, 404
+                    if new_age:
+                        game.age_category = new_age
+                    if new_categories:
+                        for category_id in new_categories:
+                            category = CategoryModel.find_by_id(cursor, category_id)
+                            if category is None:
+                                return {'message': 'Category with id {id} not found'.format(id=category_id)}, 404
+                        GameCategoryModel.delete_by_game_id(cursor, game_id)
+                        for category_id in new_categories:
+                            game_category = GameCategoryModel(game_id, category_id)
+                            game_category.save_to_db(cursor)
+                    game.update(cursor)
+                else:
+                    return {'message': 'Game with id {id} not found'.format(id=game_id)}, 404
+        except mysql.connector.Error as e:
+            raise InternalServerError(e)
+        except ValueError as e:
+            raise BadRequestError()
+        except Exception as e:
+            raise InternalServerError(e)
+
+        return {'message': 'Game edited successfully.'}, 201
 
 class AddKey(Resource):
     parser = reqparse.RequestParser()
@@ -230,6 +330,47 @@ class FetchAllShoppings(Resource):
                     results.append(result)
 
                 return {"transactions": results}
+
+        except Exception as e:
+            raise InternalServerError(e)
+
+class FetchAllUsers(Resource):
+
+    @classmethod
+    @jwt_required
+    @require_admin
+    def get(cls):
+        try:
+            with dbCursor() as cursor:
+                all_users = UserModel.find_all(cursor)
+                return {
+                    'users' : [user.json() for user in all_users]
+                }
+
+        except Exception as e:
+            raise InternalServerError(e)
+
+class FetchGameKeys(Resource):
+    parser = reqparse.RequestParser()
+    parser.add_argument(
+        "game_id", type=int, required=True, help="This field cannot be left blank!"
+    )
+    @classmethod
+    @jwt_required
+    @require_admin
+    def get(cls):
+        data = cls.parser.parse_args()
+        game_id = data['game_id']
+        try:
+            with dbCursor() as cursor:
+                game = GameModel.find_by_id(cursor,game_id)
+                if game:
+                    keys = KeyModel.find_all_by_game_id(cursor, game_id)
+                    return {
+                        'keys' : [key.json() for key in keys]
+                    }
+                else:
+                    return {'message': "Error, incorrect game id"}, 404
 
         except Exception as e:
             raise InternalServerError(e)

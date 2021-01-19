@@ -47,7 +47,15 @@ class GameCategoryModel:
             category = GameCategoryModel(name,game_id,_id)   
             games_categories.append(category)          
         
-        return games_categories    
+        return games_categories
+
+    @classmethod
+    def delete_by_game_id(cls, cursor, game_id):
+        query = "DELETE FROM games_categories WHERE game_id = %s"
+        params = (game_id,)
+        cursor.execute(query, params)
+        cursor.id = cursor.lastrowid
+
     def save_to_db(self,cursor):        
         query = "INSERT INTO games_categories (game_id,category_id) VALUES (%s, %s)"
         params = (self.game_id,self.category_id)

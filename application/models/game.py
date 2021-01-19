@@ -122,17 +122,33 @@ class GameModel():
         params = (name + "%",)
         cursor.execute(query, params)
         gameData = cursor.fetchall()
-            
+
         games = []
-        for row in gameData:          
+        for row in gameData:
             _id,name,price,quantity,description,release_date,is_digital,platform_id,age_category = row
-            game = GameModel(name,price,quantity,description,release_date,is_digital,platform_id,age_category,_id)  
+            game = GameModel(name,price,quantity,description,release_date,is_digital,platform_id,age_category,_id)
             games.append(game)
 
         return games
-         
+
+    @classmethod
+    def get_age_categories(cls, cursor):
+        query = "SELECT DISTINCT age_category from games"
+        cursor.execute(query)
+        ageData = cursor.fetchall()
+
+        return ageData
+
     def save_to_db(self,cursor):        
         query = "INSERT INTO games (name,price,quantity,description,release_date,is_digital,platform_id,age_category) VALUES (%s, %s,%s,%s,%s, %s,%s,%s)"
         params = (self.name,self.price,self.quantity,self.description,self.release_date,self.is_digital,self.platform_id,self.age_category)
         cursor.execute(query, params)
         self.id = cursor.lastrowid
+
+    def update(self, cursor):
+        query = "UPDATE games\n"
+        query += "SET name=%s, price=%s, quantity=%s, description=%s, release_date=%s, is_digital=%s, platform_id=%s, age_category=%s"
+        query += "WHERE id=%s"
+        params = (self.name, self.price, self.quantity, self.description, self.release_date, self.is_digital, self.platform_id,self.age_category,self.id)
+        cursor.execute(query, params)
+

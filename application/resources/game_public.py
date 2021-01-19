@@ -144,7 +144,16 @@ class FetchGame(Resource):
                 return { "game" : game_json}
         except Exception as e:
             raise InternalServerError(e)
-        
+
+class FetchAgeCategories(Resource):
+    @classmethod
+    def get(cls):
+        try:
+            with dbCursor() as cursor:
+                age_categories = GameModel.get_age_categories(cursor)
+                return {"age_categories": age_categories}
+        except Exception as e:
+            raise InternalServerError(e)
 
 
 class BuyGames(Resource):

@@ -1,6 +1,7 @@
 from flask_restful import Resource, reqparse
 import mysql.connector
 from flask_jwt_extended import create_access_token,jwt_required,get_jwt_identity
+from store.application.resources.authorize import require_admin
 
 from store.application.exceptions import InternalServerError
 from store.application.models.user import UserModel
@@ -39,6 +40,40 @@ class UserRegister(Resource):
 
         return {'message': 'User created successfully.'}, 201
 
+class AdminRegister(Resource):
+    parser = reqparse.RequestParser()
+    parser.add_argument(
+        "username", type=str, required=True, help="This field cannot be left blank!"
+    )
+    parser.add_argument(
+        "password", type=str, required=True, help="This field cannot be left blank!"
+    )
+    parser.add_argument(
+        "email", type=str, required=True, help="This field cannot be left blank!"
+    )
+
+    @classmethod
+    @jwt_required
+    @require_admin
+    def post(cls):
+        data = cls.parser.parse_args()
+        try:
+            with dbCursor() as cursor:
+                if UserModel.find_by_username(cursor, data["username"]):
+                    return {"message": "User already exists"}, 409
+                if UserModel.find_by_email(cursor, data["email"]):
+                    return {"message": "This email is already taken"}, 409
+
+                password_hash, salt = encrypt_base64(data['password'])
+                role = 'admin'
+                user = UserModel(data['username'], data['email'], role, password_hash, salt)
+                user.save_to_db(cursor)
+        except mysql.connector.Error as e:
+            raise InternalServerError(e)
+        except Exception as e:
+            raise InternalServerError(e)
+
+        return {'message': 'Admin created successfully.'}, 201
 class UserLogin(Resource):
     parser = reqparse.RequestParser()
     parser.add_argument(
@@ -55,7 +90,9 @@ class UserLogin(Resource):
             with dbCursor() as cursor:
                 user = UserModel.find_by_username(cursor,data['username'])
                 if user is None:
-                    return {'message' : "Invalid credentials"}, 401   
+                    return {'message' : "Invalid credentials"}, 401
+                elif user.role == "banned":
+                    return {'message' : "You are banned"}, 401
             
             result = verifyHash_base64(data['password'],user.password_hash,user.salt)                       
 
@@ -103,4 +140,100 @@ class ChangePassword(Resource):
         except Exception as e:
             raise InternalServerError(e)
 
+class ChangeEmail(Resource):
+    parser = reqparse.RequestParser()
+    parser.add_argument(
+        "newemail", type=str, required=True, help="This field cannot be left blank!"
+    )
 
+    @classmethod
+    @jwt_required
+    def put(cls):
+        data = cls.parser.parse_args()
+        try:
+            with dbCursor() as cursor:
+                new_email = data['newemail']
+                user_id = get_jwt_identity()
+                user = UserModel.find_by_id(cursor, user_id)
+
+                if user:
+                    user.email = new_email
+                    user.update(cursor)
+                return {"message": "Email changed succesfully"}, 200
+        except Exception as e:
+            raise InternalServerError(e)
+
+
+class ChangeUsersCredentials(Resource):
+    parser = reqparse.RequestParser()
+    parser.add_argument(
+        "user_id", type=int, required=True, help="This field cannot be left blank!"
+    )
+    parser.add_argument(
+        "newusername", type=str, required=False, help="This field cannot be left blank!"
+    )
+    parser.add_argument(
+        "newpass", type=str, required=False, help="This field cannot be left blank!"
+    )
+    parser.add_argument(
+        "newemail", type=str, required=False, help="This field cannot be left blank!"
+    )
+    parser.add_argument(
+        "newrole", type=str, required=False, help="This field cannot be left blank!"
+    )
+
+    @classmethod
+    @jwt_required
+    @require_admin
+    def put(cls):
+        data = cls.parser.parse_args()
+        user_id = data['user_id']
+        new_username = data['newusername']
+        new_pass = data['newpass']
+        new_email = data['newemail']
+        new_role = data['newrole']
+        try:
+            with dbCursor() as cursor:
+                user = UserModel.find_by_id(cursor, user_id);
+                if user:
+                    if new_username:
+                        user.username = new_username
+                    if new_pass:
+                        password_hash, salt = encrypt_base64(new_pass)
+                        user.password_hash = password_hash
+                        user.salt = salt
+                    if new_role:
+                        user.role = new_role
+                    if new_email:
+                        user.email = new_email
+                    if new_role:
+                        user.role = new_role
+                    user.update(cursor)
+                    return {"message": "Password changed succesfully"}, 200
+                else:
+                    return {"message": "User doesnt exist"}, 401
+        except Exception as e:
+            raise InternalServerError(e)
+
+class BanUser(Resource):
+    parser = reqparse.RequestParser()
+    parser.add_argument(
+        "user_id", type=int, required=True, help="This field cannot be left blank!"
+    )
+
+    @classmethod
+    @jwt_required
+    @require_admin
+    def put(cls):
+        data = cls.parser.parse_args()
+        try:
+            with dbCursor() as cursor:
+                user = UserModel.find_by_id(cursor, data['user_id']);
+                if user:
+                    user.role = "banned"
+                    user.update(cursor)
+                    return {"message": "User banned succesfully"}, 200
+                else:
+                    return {"message": "User doesnt exist"}, 401
+        except Exception as e:
+            raise InternalServerError(e)
