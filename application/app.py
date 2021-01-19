@@ -9,7 +9,7 @@ import sys
 
 from store.application.exceptions import errors
 from store.application.resources.user import UserRegister, UserLogin, ChangePassword, ChangeEmail, AdminRegister, ChangeUsersCredentials, BanUser
-from store.application.resources.game_admin import AddGame, AddKey, AddCategory, DeleteCategory, AddPlatform, DeletePlatform, FetchAllShoppings, FetchAllUsers, FetchGameKeys
+from store.application.resources.game_admin import AddGame, AddKey, AddCategory, DeleteCategory, AddPlatform, DeletePlatform, FetchAllShoppings, FetchAllUsers, FetchGameKeys, EditGame
 from store.application.resources.game_public import AdvancedSearchGame,BuyGames,FetchCategories,FetchGame,FetchPlatforms,FetchMyShoppings, FetchAgeCategories
 from store.application.resources.jwt import set_jwt_settings
 
@@ -63,6 +63,7 @@ api.add_resource(ChangeUsersCredentials, '/edituser')
 api.add_resource(BanUser, '/ban')
 
 api.add_resource(AddGame,'/addgame')
+api.add_resource(EditGame, '/editgame')
 api.add_resource(AdvancedSearchGame,'/games')
 api.add_resource(FetchCategories,'/categories')
 api.add_resource(FetchPlatforms,'/platforms')

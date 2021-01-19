@@ -144,3 +144,11 @@ class GameModel():
         params = (self.name,self.price,self.quantity,self.description,self.release_date,self.is_digital,self.platform_id,self.age_category)
         cursor.execute(query, params)
         self.id = cursor.lastrowid
+
+    def update(self, cursor):
+        query = "UPDATE games\n"
+        query += "SET name=%s, price=%s, quantity=%s, description=%s, release_date=%s, is_digital=%s, platform_id=%s, age_category=%s"
+        query += "WHERE id=%s"
+        params = (self.name, self.price, self.quantity, self.description, self.release_date, self.is_digital, self.platform_id,self.age_category,self.id)
+        cursor.execute(query, params)
+
