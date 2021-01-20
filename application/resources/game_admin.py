@@ -2,7 +2,7 @@ from flask_restful import Resource, reqparse
 import mysql.connector
 from flask_jwt_extended import jwt_required,get_jwt_identity
 from datetime import datetime
-
+import time
 from store.application.models.game import GameModel
 from store.application.models.game_category import GameCategoryModel
 from store.application.models.category import CategoryModel
@@ -54,8 +54,8 @@ class AddGame(Resource):
         data = cls.parser.parse_args()  
         try:
             #create and and save GameModel
-            now = datetime.utcnow()
-            data['release_date'] = now.strftime('%Y-%m-%d %H:%M:%S')
+            now = datetime.utcnow()            
+            data['release_date'] = now.strftime('%Y-%m-%d %H:%M:%S')            
             categories = data.pop('categories')
             with dbCursor() as cursor:
                 for category_id in categories:
