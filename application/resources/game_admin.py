@@ -143,8 +143,6 @@ class EditGame(Resource):
                         game.name = new_name
                     if new_price:
                         game.price = new_price
-                    if new_quantity:
-                        game.quantity = new_quantity
                     if new_descr:
                         game.description = new_descr
                     if new_descr:
@@ -156,6 +154,11 @@ class EditGame(Resource):
                             return {'message': 'Cant change to box, keys for the game exists'}, 404
                         else:
                             game.is_digital = new_is_digital
+                    if new_quantity:
+                        if game.is_digital:
+                            return {'message': 'Cant change quantity of digital game'}, 404
+                        else:
+                            game.quantity = new_quantity
                     if new_platform:
                         if PlatformModel.find_by_id(cursor, new_platform) is not None:
                             game.platform_id = new_platform
