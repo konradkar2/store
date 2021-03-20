@@ -18,7 +18,7 @@ Here you can see it's structure
 Features
 --
 - We used python and flask restful  
-- All quaries consist of pure sql commands, no ORM was used  
+- All queries consist of pure sql commands, no ORM was used  
 - SQL queries are safe, we've implemented transactions and no SQL injection is possible  
 - all the endpoints and their description are available at the link to swagger on top of readme.  
 
