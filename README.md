@@ -5,7 +5,8 @@ This project is the backend restfull app for https://github.com/Matt444/GameStor
 
 About
 ---
-Our main task was to implement "complex" relational database and some interface to it, so we have come with an idea to make a web store that sells games.
+Our main task was to implement "complex" relational database and some interface to it,   
+so we have come with an idea to make a web store that sells games.
 
 ![](https://user-images.githubusercontent.com/64275057/111546638-4518a380-8778-11eb-901b-db8a95ea12fa.png)
 Database
