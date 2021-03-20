@@ -1,6 +1,6 @@
 Game Store backend
 ==
-This project is the backend restfull app for https://github.com/Matt444/GameStore--frontend/  
+This project is the backend restfull app for https://github.com/Matt444/GameStore--frontend/tree/master/ 
 **API description** at https://app.swaggerhub.com/apis/konradkar2/store/1.0.0  
 
 About
